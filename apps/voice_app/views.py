@@ -20,7 +20,7 @@ def talkToMe(phrase):
 
 
 def index(request):
-    itemlist = ItemList.objects.all()
+    itemlist = ItemList.objects.all().order_by("-id")
     content = {
         "all_items": itemlist
     }
