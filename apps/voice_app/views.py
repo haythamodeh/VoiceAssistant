@@ -8,9 +8,8 @@ import re
 from pyowm import OWM
 from .models import ItemList
 
-API_key = 'G097IueS-9xN712E'
+API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
-owm = OWM(API_key='G097IueS-9xN712E', version='2.5')
 # Create your views here.
 # words = []
 
@@ -26,6 +25,7 @@ def index(request):
         "all_items": itemlist
     }
     return render(request, "voice_app/index.html", content)
+
 
 def voice(request):
     r = sr.Recognizer()
@@ -56,20 +56,26 @@ def voice(request):
 
     
 
-    if 'current weather in Seattle' in phrase:
+    if 'current weather' in command:
         # reg_ex = re.search('current weather in (.*)', command)
         # if reg_ex:
             # city = reg_ex.group(1)
-        obs = owm.weather_at_place('London,GB')
+            # talkToMe("what is the city")
+
+        
+        obs = owm.weather_at_place('Seattle,US')
+        # obs = owm.weather_at_id(2643741)
         w = obs.get_weather()
-        w.get_temperature('fahrenheit') 
+        temp = w.get_temperature('fahrenheit')
+        status = w.get_status()
+        print(temp)
         # talkToMe("seattle weather")
         # city = "seattle"
-        weather = Weather()
-        location = weather.lookup_by_location("seattle")
-        condition = location.condition
+        # weather = Weather()
+        # location = weather.lookup_by_location("seattle")
+        # condition = location.condition
         # talkToMe('The Current weather in %s is %s The tempeture is %.1f degree' % (city, condition.text(), (int(condition.temp())-32)/1.8))
-        talkToMe("weather is " + w)
+        talkToMe("weather is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
 
     # talkToMe(phrase)
     # words.append(phrase)

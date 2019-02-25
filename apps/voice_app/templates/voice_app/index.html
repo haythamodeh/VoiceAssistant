@@ -4,19 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>voice app</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Voice App</title>
+    <style>
+        .activityLog {
+            height: 200px;
+            overflow: scroll;
+            border: 2px solid #000;
+            width: 250px;
+        }
+        .activityLogWrapper, .main-content {
+            display: inline-block;
+            vertical-align: top;
+        }
+        .main-content {
+            border: 2px solid #000;
+            width: 700px;
+            height: 400px;
+        }
+    </style>
 </head>
 <body>
-    <h1>My List</h1>
-    <h3>You Said:</h3>
-    <ul>
-    {% for item in all_items %}
-        <li>{{ item.item }}</li>
-    {% endfor %}
-    </ul>
+    <div class="container">
+        <h1 class="text-center">HELLO!</h1>
+        
+        <div class="activityLogWrapper">
+            <h3>You're Commands:</h3>
+            <div class="activityLog text-center">
+                {% for item in all_items %}
+                    <p>{{ item.item }}</p>
+                {% endfor %}
+            </div>
+            <form action="">
+                <input type="submit" value="Clear">
+            </form>
+        </div>
+        <div class="main-content">
 
-    <form action="/voice">
-        <input type="submit" value="Press To Talk">
-    </form>
+        </div>
+        <div class="button text-center">
+            <form action="/voice">
+                <input type="submit" value="Press To Talk" class="btn btn-primary">
+            </form>
+        </div>
+        
+        
+    </div>
+    
 </body>
 </html>
