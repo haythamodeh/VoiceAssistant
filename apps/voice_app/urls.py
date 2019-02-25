@@ -3,5 +3,6 @@ from.import views
 
 urlpatterns = [
     url(r'^$', views.index),
-    url(r"^voice", views.voice),
+    url(r"^myCommand$", views.myCommand),
+    url(r"^voice$", views.voice),
 ]
