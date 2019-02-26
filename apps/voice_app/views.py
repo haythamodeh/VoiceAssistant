@@ -16,6 +16,9 @@ import vlc
 import urllib.request
 from bs4 import BeautifulSoup
 import wikipedia
+from newsapi import NewsApiClient
+
+api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
@@ -35,8 +38,9 @@ def postImage(phrase):
 
 def index(request):
     # talkToMe("Hello!")
-    if not "color" in request.session: 
+    if not "color" in request.session:
         request.session["color"] = "white"
+
     itemlist = ItemList.objects.all().order_by("-id")
     phrases = Phrase.objects.last()
     content = {
@@ -45,38 +49,39 @@ def index(request):
     }
     return render(request, "voice_app/index.html", content)
 
+
 def clearActivityLog(request):
     if 'color' in request.session:
         del request.session["color"]
-    if 'main_content' in request.session:
+    if "main_content" in request.session:
         del request.session["main_content"]
     all_items = ItemList.objects.all()
     all_items.delete()
     return redirect("/")
+
 
 def myCommand(request):
     r = sr.Recognizer()
 
     with sr.Microphone() as source:
         print("I am ready for your next command")
-        # r.pause_threshhold = 1
-        # r.adjust_for_ambient_noise(source, duration = 1)
+
         audio = r.listen(source)
 
     try:
         command = r.recognize_google(audio)
-        # talkToMe("You said " + command)
         print("You said: " + command)
 
     # loop back to continue to listen for commands
-
     except sr.UnknownValueError:
+        talkToMe("Did not recognize your voice")
         voice(myCommand(command))
 
     phrase = r.recognize_google(audio)
     ItemList.objects.create(item=phrase)
     request.session["command"] = command
     return request.session["command"]
+
 
 def voice(request):
     talkToMe("whats your command")
@@ -87,19 +92,24 @@ def voice(request):
     #         url = "https://www.reddit.com/r/python"
     #         webbrowser.get(chrome_path).open(url)
 
+    if "top news" in command:
+        print("in news command")
+        api.get_top_headlines(sources='bbc-news')
+        request.session["bitcoin"] = api.get_everything(q='bitcoin')
+        request.session["all_news"] = api.get_sources()
+        request.session["last_news_command"] = "here are your top news for today"
+        #  = all_news
+        talkToMe("here are your top news for today")
+
     if "tell me a joke" in command:
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
         print(joke.text)
         talkToMe(joke.text)
-    # if "tell me a joke" in command:
-    #     joke = requests.get('https://geek-jokes.sameerkumar.website/api')
-    #     print(joke.text)
-    #     talkToMe(joke.text)
 
     if "hello" in command:
         talkToMe("hey")
-    
-    if "how are you" in command:
+
+    if "how are you?" in command:
         talkToMe("i'm doing fine, thanks for asking")
 
     BACKGROUND_REGEX = re.compile(r'(background)')
@@ -125,18 +135,7 @@ def voice(request):
         temp = w.get_temperature('fahrenheit')
         status = w.get_status()
         print(temp)
-        # talkToMe("seattle weather")
-        # city = "seattle"
-        # weather = Weather()
-        # location = weather.lookup_by_location("seattle")
-        # condition = location.condition
-        # talkToMe('The Current weather in %s is %s The tempeture is %.1f degree' % (city, condition.text(), (int(condition.temp())-32)/1.8))
-        talkToMe("current weather in " + city + " is " + str(status) +
-                " with a temerature of " + str(temp["temp"]) + " degrees")
-
-    elif 'how are you' in command:
-        talkToMe("I am good, thanks!")
-        talkToMe("current weather in "+ city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
+        talkToMe("current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
 
     PIC_REGEX_COMMAND = re.compile(r'\w+(\s+pictures*\b)')
     if PIC_REGEX_COMMAND.match(command.lower()):
@@ -156,26 +155,14 @@ def voice(request):
         for i in flickr_res.json()['photos']['photo']:
             all_pics.append(i['id'])
         for m in all_pics:
-            url_complete = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&photo_id=" + m + "&format=json&nojsoncallback=1"
+            url_complete = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&photo_id=" + \
+                m + "&format=json&nojsoncallback=1"
             img_res = requests.get(url_complete)
             images = img_res.json()['sizes']['size']
             for j in images:
                 if j['label'] == 'Medium':
                     formated_pics.append('<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
         request.session['main_content'] = formated_pics
-
-    elif 'how are you' in command:
-            talkToMe("I am good, thanks!")
-
-    elif 'joke' in command:
-        res = requests.get(
-            'https://icanhazdadjoke.com/',
-            headers={"Accept": "application/json"}
-        )
-        if res.status_code == requests.codes.ok:
-            talkToMe(str(res.json()['joke']))
-        else:
-            talkToMe('oops!I ran out of jokes')
 
     elif 'open website' in command:
         reg_ex = re.search('open website (.+)', command)
@@ -216,8 +203,7 @@ def voice(request):
             mail.close()
 
             talkToMe('Email sent.')
-
-    elif 'celebrate' in command:
+    elif 'music' in command:
         talkToMe('What song?')
         song = myCommand(request)
 
@@ -227,7 +213,7 @@ def voice(request):
         response = urllib.request.urlopen(url)
         html = response.read()
         soup = BeautifulSoup(html, 'html.parser')
-        for vid in soup.findAll(attrs={'class':'yt-uix-tile-link'}):
+        for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
             video = 'https://www.youtube.com' + vid['href']
             break
 
@@ -245,10 +231,6 @@ def voice(request):
     elif 'who is' in command:
         talkToMe('What name?')
         name = myCommand(request)
-
-        talkToMe(wikipedia.summary(name, sentences=2))
-
+        talkToMe(wikipedia.summary(name, sentences=1))
 
     return redirect("/")
-
-
