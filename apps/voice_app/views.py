@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+import requests
+from django.http import HttpResponseRedirect
 from gtts import gTTS
 import speech_recognition as sr
 import os
@@ -34,28 +36,34 @@ def index(request):
     }
     return render(request, "voice_app/index.html", content)
 
-
-def voice(request):
+def myCommand(request):
     r = sr.Recognizer()
+    
     with sr.Microphone() as source:
-        print("Say Something!")
-        talkToMe("Say Something")
+        print("I am ready for your next command")
+        # r.pause_threshhold = 1
+        # r.adjust_for_ambient_noise(source, duration = 1)
         audio = r.listen(source)
-        
 
     try:
-        print("You said: " + r.recognize_google(audio))
-        print("Thank You!")
-        # talkToMe("You said " + r.recognize_google(audio))
-        # talkToMe("Thank You")
-        # print("You said in arabic: " + r.recognize_google(audio, language = "ar-AR"))
+        command = r.recognize_google(audio)
+        # talkToMe("You said " + command)
+        print("You said: " + command)
+    
+    #loop back to continue to listen for commands
 
-    except:
-        pass
+    except sr.UnknownValueError:
+        voice(myCommand(command))
 
     phrase = r.recognize_google(audio)
-    command = r.recognize_google(audio)
     ItemList.objects.create(item = phrase)
+    request.session["command"] = command
+    return request.session["command"]
+
+
+def voice(request):
+    talkToMe("whats your command")
+    command = myCommand(request)
 
 
     # if "open Reddit python" in command:
@@ -63,16 +71,17 @@ def voice(request):
     #         url = "https://www.reddit.com/r/python"
     #         webbrowser.get(chrome_path).open(url)
 
-    
+    if "tell me a joke" in command:
+        joke = requests.get('https://geek-jokes.sameerkumar.website/api')
+        print(joke.text)
+        talkToMe(joke.text)
+                
 
     if 'current weather' in command:
-        # reg_ex = re.search('current weather in (.*)', command)
-        # if reg_ex:
-            # city = reg_ex.group(1)
-            # talkToMe("what is the city")
+        talkToMe("What city")
+        city = myCommand(request)
 
-        
-        obs = owm.weather_at_place('Seattle,US')
+        obs = owm.weather_at_place(city)
         # obs = owm.weather_at_id(2643741)
         w = obs.get_weather()
         temp = w.get_temperature('fahrenheit')
@@ -108,16 +117,10 @@ def voice(request):
             pass
     elif 'cat' in command:
         postImage("http://pngimg.com/uploads/cat/cat_PNG50509.png")
+        talkToMe("current weather in "+ city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
 
-    # talkToMe(phrase)
-    # words.append(phrase)
     
     return redirect("/")
-    # r.recognize_google(audio)   
-    # print("Talk")
-    # phrase = speech.input()
-    # speech.say("You said %s" % phrase)
-    # print("phrase: " + phrase )
 
     
     
