@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 import wikipedia
 
 
+
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
 # Create your views here.
@@ -36,6 +37,9 @@ def postImage(phrase):
 
 
 def index(request):
+    # talkToMe("Hello!")
+    if not "color" in request.session: 
+        request.session["color"] = "white"
     itemlist = ItemList.objects.all().order_by("-id")
     phrases = Phrase.objects.last()
     content = {
@@ -44,6 +48,12 @@ def index(request):
     }
     return render(request, "voice_app/index.html", content)
 
+def clearActivityLog(request):
+    del request.session["color"]
+    del request.session["main_content"]
+    all_items = ItemList.objects.all()
+    all_items.delete()
+    return redirect("/")
 
 def myCommand(request):
     r = sr.Recognizer()
@@ -69,7 +79,6 @@ def myCommand(request):
     request.session["command"] = command
     return request.session["command"]
 
-
 def voice(request):
     talkToMe("whats your command")
     command = myCommand(request)
@@ -83,6 +92,23 @@ def voice(request):
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
         print(joke.text)
         talkToMe(joke.text)
+    # if "tell me a joke" in command:
+    #     joke = requests.get('https://geek-jokes.sameerkumar.website/api')
+    #     print(joke.text)
+    #     talkToMe(joke.text)
+
+    
+
+    if "hello" in command:
+        talkToMe("hey")
+    
+    if "how are you" in command:
+        talkToMe("i'm doing fine, thanks for asking")
+
+    if "change background" in command:
+        talkToMe("what color do you want")
+        color = myCommand(request)
+        request.session["color"] = color     
 
     if 'current weather' in command:
         talkToMe("What city")
@@ -105,6 +131,35 @@ def voice(request):
 
     elif 'how are you' in command:
         talkToMe("I am good, thanks!")
+        talkToMe("current weather in "+ city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
+
+    if 'fox' in command.lower():
+        print("Sam, this is the command")
+        print(command)
+        talkToMe(command)
+        flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + command + "&tag_mode=any&format=json&nojsoncallback=1"
+        print(flickrApiUrl)
+        flickr_res = requests.get(flickrApiUrl)
+        print("OH SHIT")
+        print(flickr_res.json()['photos']['photo'])
+        all_pics = []
+        for i in flickr_res.json()['photos']['photo']:
+            all_pics.append(i['id'])
+        print(all_pics)
+        formated_pics = []
+        for m in all_pics:
+            url_complete = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&photo_id=" + m + "&format=json&nojsoncallback=1"
+            img_res = requests.get(url_complete)
+            images = img_res.json()['sizes']['size']
+            print("SET")
+            for j in images:
+                if j['label'] == 'Medium':
+                    print(j['source'])
+                    formated_pics.append('<img src="{}" alt="things" height="200" width="200">'.format(j['source']))
+        request.session['main_content'] = formated_pics
+
+    elif 'how are you' in command:
+            talkToMe("I am good, thanks!")
 
     elif 'joke' in command:
         res = requests.get(
@@ -115,6 +170,7 @@ def voice(request):
             talkToMe(str(res.json()['joke']))
         else:
             talkToMe('oops!I ran out of jokes')
+
     elif 'open website' in command:
         reg_ex = re.search('open website (.+)', command)
         if reg_ex:
@@ -187,3 +243,5 @@ def voice(request):
 
 
     return redirect("/")
+
+
