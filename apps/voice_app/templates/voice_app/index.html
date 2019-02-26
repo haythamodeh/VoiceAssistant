@@ -41,16 +41,25 @@
             </form>
         </div>
         <div class="main-content">
-
+            <p>{{last_phrase.content}}</p>
+            <img src ="{{last_phrase.content}}">
         </div>
         <div class="button text-center">
             <form action="/voice">
-                <input type="submit" value="Press To Talk" class="btn btn-primary">
+                <input id = "myBtn" type="submit" value="Press To Talk" class="btn btn-primary" onkeypress="submitOnEnter(this, event);" />
+
             </form>
         </div>
         
         
     </div>
-    
+    <script type="text/javascript">
+        function submitOnEnter(inputElement, event) {
+            if (event.keyCode == 13) { // No need to do browser specific checks. It is always 13.
+            print("YO!")
+                inputElement.form.submit();
+            }
+        }
+    </script>
 </body>
 </html>
