@@ -17,18 +17,15 @@ import urllib.request
 from bs4 import BeautifulSoup
 import wikipedia
 
-
-
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
 # Create your views here.
 # words = []
 
-
 def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
     tts.save("audio.mp3")
-    os.system("audio.mp3")
+    os.system("mpg123 audio.mp3")
     Phrase.objects.create(content=phrase)
 
 
@@ -49,8 +46,10 @@ def index(request):
     return render(request, "voice_app/index.html", content)
 
 def clearActivityLog(request):
-    del request.session["color"]
-    del request.session["main_content"]
+    if 'color' in request.session:
+        del request.session["color"]
+    if 'main_content' in request.session:
+        del request.session["main_content"]
     all_items = ItemList.objects.all()
     all_items.delete()
     return redirect("/")
@@ -97,18 +96,24 @@ def voice(request):
     #     print(joke.text)
     #     talkToMe(joke.text)
 
-    
-
     if "hello" in command:
         talkToMe("hey")
     
     if "how are you" in command:
         talkToMe("i'm doing fine, thanks for asking")
 
-    if "change background" in command:
-        talkToMe("what color do you want")
-        color = myCommand(request)
-        request.session["color"] = color     
+    BACKGROUND_REGEX = re.compile(r'(background)')
+    if BACKGROUND_REGEX.match(command.lower()):
+        print("Sam's background color")
+        print(command.lower())
+        COLOR_REGEX = re.compile(r'(?<=\bto\s)(\w+)')
+        color = "teal"
+        if COLOR_REGEX.search(command.lower()):
+            regex_color_result = COLOR_REGEX.search(command.lower())
+            print("the color from the command")
+            print(regex_color_result)
+            color = regex_color_result.group(0)
+        request.session["color"] = color   
 
     if 'current weather' in command:
         talkToMe("What city")
@@ -127,35 +132,36 @@ def voice(request):
         # condition = location.condition
         # talkToMe('The Current weather in %s is %s The tempeture is %.1f degree' % (city, condition.text(), (int(condition.temp())-32)/1.8))
         talkToMe("current weather in " + city + " is " + str(status) +
-                 " with a temerature of " + str(temp["temp"]) + " degrees")
+                " with a temerature of " + str(temp["temp"]) + " degrees")
 
     elif 'how are you' in command:
         talkToMe("I am good, thanks!")
         talkToMe("current weather in "+ city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
 
-    if 'fox' in command.lower():
-        print("Sam, this is the command")
-        print(command)
-        talkToMe(command)
-        flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + command + "&tag_mode=any&format=json&nojsoncallback=1"
-        print(flickrApiUrl)
-        flickr_res = requests.get(flickrApiUrl)
-        print("OH SHIT")
-        print(flickr_res.json()['photos']['photo'])
+    PIC_REGEX_COMMAND = re.compile(r'\w+(\s+pictures*\b)')
+    if PIC_REGEX_COMMAND.match(command.lower()):
+        request.session['command_for_pics'] = "showing " + command
+        PIC_REGEX = re.compile(r'\w+(?=\s+pictures*\b)')
+        command_subject = "frog"
         all_pics = []
+        formated_pics = []
+        if PIC_REGEX.match(command.lower()):
+            regex_result = PIC_REGEX.match(command.lower())
+            command_subject = regex_result.group(0)
+        print("Sam, this is the command")
+        talkToMe("showing " + command)
+        # talkToMe(command_subject)
+        flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + command + "&tag_mode=any&format=json&nojsoncallback=1"
+        flickr_res = requests.get(flickrApiUrl)
         for i in flickr_res.json()['photos']['photo']:
             all_pics.append(i['id'])
-        print(all_pics)
-        formated_pics = []
         for m in all_pics:
             url_complete = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&photo_id=" + m + "&format=json&nojsoncallback=1"
             img_res = requests.get(url_complete)
             images = img_res.json()['sizes']['size']
-            print("SET")
             for j in images:
                 if j['label'] == 'Medium':
-                    print(j['source'])
-                    formated_pics.append('<img src="{}" alt="things" height="200" width="200">'.format(j['source']))
+                    formated_pics.append('<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
         request.session['main_content'] = formated_pics
 
     elif 'how are you' in command:
@@ -180,8 +186,8 @@ def voice(request):
             print('Done!')
         else:
             pass
-    elif 'cat' in command:
-        postImage("http://pngimg.com/uploads/cat/cat_PNG50509.png")
+    # elif 'cat' in command:
+    #     postImage("http://pngimg.com/uploads/cat/cat_PNG50509.png")
 
     elif 'email' in command:
         talkToMe('Who is the recipient?')
@@ -210,6 +216,7 @@ def voice(request):
             mail.close()
 
             talkToMe('Email sent.')
+
     elif 'celebrate' in command:
         talkToMe('What song?')
         song = myCommand(request)

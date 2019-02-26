@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
+
     <title>Voice App</title>
     <style>
         .activityLog {
@@ -45,6 +45,18 @@
             background-color:rgb(117, 191, 247);
             color: rgb(152, 59, 171);
         }
+
+        ::-webkit-scrollbar {
+            width: 10px;  /* for vertical scrollbars */
+            height: 20px; /* for horizontal scrollbars */
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #983bab;
+        }
+
     </style>
 </head>
 <body style="background-color: {{ request.session.color }};">
@@ -63,10 +75,14 @@
             </form>
         </div>
         <div class="main-content">
-            {% for i in request.session.main_content %}
-                {{ i | safe }}
-            {% endfor %}
             <p>{{last_phrase.content}}</p>
+            {% if last_phrase.content == request.session.command_for_pics %}
+                <div class="container" style="background-color: black">
+                    {% for i in request.session.main_content %}
+                        {{ i | safe }}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
         <div class="button text-center">
             <form action="/voice">
@@ -74,7 +90,6 @@
                 <button id="micbtn" type="submit" class="micbtn"><i class="fa fa-microphone"></i></button>
             </form>
         </div>
-
     </div>
     
 </body>
@@ -89,13 +104,11 @@
         // }
         $(document).ready(function(e){
             console.log("hello");
-           
             $('body').keyup(function(e){
                 if(e.keyCode == 32){
                     $("#micbtn").click();
                 }
             });
-           
         });
     </script>
 </html>
