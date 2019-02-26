@@ -11,6 +11,7 @@ from pyowm import OWM
 from .models import ItemList, Phrase
 import requests
 
+
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
 # Create your views here.
@@ -26,6 +27,9 @@ def postImage(phrase):
     Phrase.objects.create(content = phrase)
 
 def index(request):
+    # talkToMe("Hello!")
+    if not "color" in request.session: 
+        request.session["color"] = "white"
     itemlist = ItemList.objects.all().order_by("-id")
     phrases = Phrase.objects.last()
     content = {
@@ -33,6 +37,13 @@ def index(request):
         "last_phrase": phrases
     }
     return render(request, "voice_app/index.html", content)
+
+def clearActivityLog(request):
+    del request.session["color"]
+    del request.session["main_content"]
+    all_items = ItemList.objects.all()
+    all_items.delete()
+    return redirect("/")
 
 def myCommand(request):
     r = sr.Recognizer()
@@ -67,10 +78,23 @@ def voice(request):
     #         url = "https://www.reddit.com/r/python"
     #         webbrowser.get(chrome_path).open(url)
 
-    if "tell me a joke" in command:
-        joke = requests.get('https://geek-jokes.sameerkumar.website/api')
-        print(joke.text)
-        talkToMe(joke.text)
+    # if "tell me a joke" in command:
+    #     joke = requests.get('https://geek-jokes.sameerkumar.website/api')
+    #     print(joke.text)
+    #     talkToMe(joke.text)
+
+    
+
+    if "hello" in command:
+        talkToMe("hey")
+    
+    if "how are you" in command:
+        talkToMe("i'm doing fine, thanks for asking")
+
+    if "change background" in command:
+        talkToMe("what color do you want")
+        color = myCommand(request)
+        request.session["color"] = color     
 
     if 'current weather' in command:
         talkToMe("What city")
