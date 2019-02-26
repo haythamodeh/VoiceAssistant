@@ -15,28 +15,49 @@
             border: 2px solid #000;
             width: 250px;
         }
-        .activityLogWrapper, .main-content {
+        .activityLogWrapper, .main-content-wrapper {
             display: inline-block;
             vertical-align: top;
         }
         .main-content {
+            padding: 20px 20px;
             border: 2px solid #000;
-            width: 700px;
+            width: 750px;
             height: 400px;
             overflow: scroll;
 
         }
+        .phrase {
+            position: absolute;
+            margin-top: -33px;
+            padding: 5px 5px;
+            border-top: 2px solid #000;
+            border-right: 2px solid #000;
+            border-left: 2px solid #000;
+        }
+        /* @keyframes micbtn {
+            0%   {color: rgb(232, 255, 83);}
+            25%  {color: rgb(130, 69, 252)}
+            50%  {color: rgb(239, 122, 20);}
+            100% {color: rgb(69, 218, 20);}
+        } */
+
         .micbtn {
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            font-size: 40px;
-            background-color:rgb(152, 59, 171);
-            color: rgb(117, 191, 247);
-            border: 3px solid rgb(43, 19, 63);
+            width: 90px;
+            height: 90px;
+            font-size: 45px;
+            background-color:rgb(117, 191, 247);
+            color: #fff;
+            border: 7px solid #fff;
             margin-top: 20px;
-            transition: 0.3s
+            animation-name: micbtn;
+            animation-duration: 2s;
+            animation-iteration-count: infinite;
+            transition: 0.3s;
+
         }
+        
         .micbtn:focus {
             outline: none;
         }
@@ -45,6 +66,11 @@
             background-color:rgb(117, 191, 247);
             color: rgb(152, 59, 171);
         }
+        h1 {
+            margin-bottom: 60px;
+        }
+
+        
     </style>
 </head>
 <body style="background-color: {{ request.session.color }};">
@@ -62,12 +88,25 @@
                 <input type="submit" value="Clear" class="btn btn-danger">
             </form>
         </div>
+        <div class="main-content-wrapper">
+        <p class="phrase">{{last_phrase.content.upper}}</p>
         <div class="main-content">
+            
             {% for i in request.session.main_content %}
                 {{ i | safe }}
             {% endfor %}
-            <p>{{last_phrase.content}}</p>
+
+            {% if last_phrase.content == request.session.last_news_command %}
+                {% for article in request.session.bitcoin.articles %}
+                        <p style="color: green;">{{article.title}}</p>
+                        <p>{{article.content}}</p>
+                        <p><a href="{{article.url}}" target="_blank">{{article.url}}</a></p>
+                        <hr>
+                {% endfor %}
+            {% endif %}
+            
         </div>
+    </div>
         <div class="button text-center">
             <form action="/voice">
                 <!-- <input id = "myBtn" type="submit" value="Press To Talk" class="btn btn-primary fa fa-microphone" onkeypress="submitOnEnter(this, event);" /> -->

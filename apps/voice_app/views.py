@@ -16,9 +16,10 @@ import vlc
 import urllib.request
 from bs4 import BeautifulSoup
 import wikipedia
+from newsapi import NewsApiClient
 
 
-
+api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
 # Create your views here.
@@ -28,7 +29,7 @@ owm = OWM(API_key)
 def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
     tts.save("audio.mp3")
-    os.system("audio.mp3")
+    os.system("mpg123 audio.mp3")
     Phrase.objects.create(content=phrase)
 
 
@@ -50,7 +51,8 @@ def index(request):
 
 def clearActivityLog(request):
     del request.session["color"]
-    del request.session["main_content"]
+    if "main_content" in request.session:
+        del request.session["main_content"]
     all_items = ItemList.objects.all()
     all_items.delete()
     return redirect("/")
@@ -72,6 +74,7 @@ def myCommand(request):
     # loop back to continue to listen for commands
 
     except sr.UnknownValueError:
+        talkToMe("Did not recognize your voice")
         voice(myCommand(command))
 
     phrase = r.recognize_google(audio)
@@ -88,16 +91,21 @@ def voice(request):
     #         url = "https://www.reddit.com/r/python"
     #         webbrowser.get(chrome_path).open(url)
 
+
+    
+    if "top news" in command:
+        print("in news command")
+        api.get_top_headlines(sources='bbc-news')
+        request.session["bitcoin"] = api.get_everything(q='bitcoin')
+        request.session["all_news"] = api.get_sources()
+        request.session["last_news_command"] = "here are your top news for today"
+        #  = all_news
+        talkToMe("here are your top news for today")
+
     if "tell me a joke" in command:
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
         print(joke.text)
         talkToMe(joke.text)
-    # if "tell me a joke" in command:
-    #     joke = requests.get('https://geek-jokes.sameerkumar.website/api')
-    #     print(joke.text)
-    #     talkToMe(joke.text)
-
-    
 
     if "hello" in command:
         talkToMe("hey")
@@ -120,18 +128,7 @@ def voice(request):
         temp = w.get_temperature('fahrenheit')
         status = w.get_status()
         print(temp)
-        # talkToMe("seattle weather")
-        # city = "seattle"
-        # weather = Weather()
-        # location = weather.lookup_by_location("seattle")
-        # condition = location.condition
-        # talkToMe('The Current weather in %s is %s The tempeture is %.1f degree' % (city, condition.text(), (int(condition.temp())-32)/1.8))
-        talkToMe("current weather in " + city + " is " + str(status) +
-                 " with a temerature of " + str(temp["temp"]) + " degrees")
-
-    elif 'how are you' in command:
-        talkToMe("I am good, thanks!")
-        talkToMe("current weather in "+ city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
+        talkToMe("current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
 
     if 'fox' in command.lower():
         print("Sam, this is the command")
@@ -157,9 +154,6 @@ def voice(request):
                     print(j['source'])
                     formated_pics.append('<img src="{}" alt="things" height="200" width="200">'.format(j['source']))
         request.session['main_content'] = formated_pics
-
-    elif 'how are you' in command:
-            talkToMe("I am good, thanks!")
 
     elif 'joke' in command:
         res = requests.get(
