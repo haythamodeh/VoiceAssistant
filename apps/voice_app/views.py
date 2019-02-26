@@ -18,7 +18,6 @@ from bs4 import BeautifulSoup
 import wikipedia
 
 
-
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
 # Create your views here.
@@ -38,8 +37,9 @@ def postImage(phrase):
 
 def index(request):
     # talkToMe("Hello!")
-    if not "color" in request.session: 
+    if not "color" in request.session:
         request.session["color"] = "white"
+
     itemlist = ItemList.objects.all().order_by("-id")
     phrases = Phrase.objects.last()
     content = {
@@ -48,6 +48,7 @@ def index(request):
     }
     return render(request, "voice_app/index.html", content)
 
+
 def clearActivityLog(request):
     del request.session["color"]
     del request.session["main_content"]
@@ -55,22 +56,20 @@ def clearActivityLog(request):
     all_items.delete()
     return redirect("/")
 
+
 def myCommand(request):
     r = sr.Recognizer()
 
     with sr.Microphone() as source:
         print("I am ready for your next command")
-        # r.pause_threshhold = 1
-        # r.adjust_for_ambient_noise(source, duration = 1)
+
         audio = r.listen(source)
 
     try:
         command = r.recognize_google(audio)
-        # talkToMe("You said " + command)
         print("You said: " + command)
 
     # loop back to continue to listen for commands
-
     except sr.UnknownValueError:
         voice(myCommand(command))
 
@@ -79,36 +78,26 @@ def myCommand(request):
     request.session["command"] = command
     return request.session["command"]
 
+
 def voice(request):
     talkToMe("whats your command")
     command = myCommand(request)
-
-    # if "open Reddit python" in command:
-    #         chrome_path = "open -a /Applications/Google\ Chrome.app %s"
-    #         url = "https://www.reddit.com/r/python"
-    #         webbrowser.get(chrome_path).open(url)
 
     if "tell me a joke" in command:
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
         print(joke.text)
         talkToMe(joke.text)
-    # if "tell me a joke" in command:
-    #     joke = requests.get('https://geek-jokes.sameerkumar.website/api')
-    #     print(joke.text)
-    #     talkToMe(joke.text)
-
-    
 
     if "hello" in command:
         talkToMe("hey")
-    
-    if "how are you" in command:
+
+    if "how are you?" in command:
         talkToMe("i'm doing fine, thanks for asking")
 
     if "change background" in command:
         talkToMe("what color do you want")
         color = myCommand(request)
-        request.session["color"] = color     
+        request.session["color"] = color
 
     if 'current weather' in command:
         talkToMe("What city")
@@ -120,24 +109,15 @@ def voice(request):
         temp = w.get_temperature('fahrenheit')
         status = w.get_status()
         print(temp)
-        # talkToMe("seattle weather")
-        # city = "seattle"
-        # weather = Weather()
-        # location = weather.lookup_by_location("seattle")
-        # condition = location.condition
-        # talkToMe('The Current weather in %s is %s The tempeture is %.1f degree' % (city, condition.text(), (int(condition.temp())-32)/1.8))
         talkToMe("current weather in " + city + " is " + str(status) +
                  " with a temerature of " + str(temp["temp"]) + " degrees")
-
-    elif 'how are you' in command:
-        talkToMe("I am good, thanks!")
-        talkToMe("current weather in "+ city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
 
     if 'fox' in command.lower():
         print("Sam, this is the command")
         print(command)
         talkToMe(command)
-        flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + command + "&tag_mode=any&format=json&nojsoncallback=1"
+        flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + \
+            command + "&tag_mode=any&format=json&nojsoncallback=1"
         print(flickrApiUrl)
         flickr_res = requests.get(flickrApiUrl)
         print("OH SHIT")
@@ -148,18 +128,17 @@ def voice(request):
         print(all_pics)
         formated_pics = []
         for m in all_pics:
-            url_complete = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&photo_id=" + m + "&format=json&nojsoncallback=1"
+            url_complete = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&photo_id=" + \
+                m + "&format=json&nojsoncallback=1"
             img_res = requests.get(url_complete)
             images = img_res.json()['sizes']['size']
             print("SET")
             for j in images:
                 if j['label'] == 'Medium':
                     print(j['source'])
-                    formated_pics.append('<img src="{}" alt="things" height="200" width="200">'.format(j['source']))
+                    formated_pics.append(
+                        '<img src="{}" alt="things" height="200" width="200">'.format(j['source']))
         request.session['main_content'] = formated_pics
-
-    elif 'how are you' in command:
-            talkToMe("I am good, thanks!")
 
     elif 'joke' in command:
         res = requests.get(
@@ -210,7 +189,7 @@ def voice(request):
             mail.close()
 
             talkToMe('Email sent.')
-    elif 'celebrate' in command:
+    elif 'music' in command:
         talkToMe('What song?')
         song = myCommand(request)
 
@@ -220,7 +199,7 @@ def voice(request):
         response = urllib.request.urlopen(url)
         html = response.read()
         soup = BeautifulSoup(html, 'html.parser')
-        for vid in soup.findAll(attrs={'class':'yt-uix-tile-link'}):
+        for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
             video = 'https://www.youtube.com' + vid['href']
             break
 
@@ -239,9 +218,6 @@ def voice(request):
         talkToMe('What name?')
         name = myCommand(request)
 
-        talkToMe(wikipedia.summary(name, sentences=2))
-
+        talkToMe(wikipedia.summary(name, sentences=1))
 
     return redirect("/")
-
-
