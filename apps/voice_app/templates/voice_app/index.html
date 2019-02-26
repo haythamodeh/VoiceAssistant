@@ -1,87 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'voice_app/css/style.css' %}">
+    <script src="{% static 'voice_app/js/scripts.js' %}"></script>
     <title>Voice App</title>
-    <style>
-        .activityLog {
-            height: 200px;
-            overflow: scroll;
-            border: 2px solid #000;
-            width: 250px;
-        }
-        .activityLogWrapper, .main-content-wrapper {
-            display: inline-block;
-            vertical-align: top;
-        }
-        .main-content {
-            padding: 20px 20px;
-            border: 2px solid #000;
-            width: 750px;
-            height: 400px;
-            overflow: scroll;
-
-        }
-        .phrase {
-            position: absolute;
-            margin-top: -33px;
-            padding: 5px 5px;
-            border-top: 2px solid #000;
-            border-right: 2px solid #000;
-            border-left: 2px solid #000;
-        }
-        /* @keyframes micbtn {
-            0%   {color: rgb(232, 255, 83);}
-            25%  {color: rgb(130, 69, 252)}
-            50%  {color: rgb(239, 122, 20);}
-            100% {color: rgb(69, 218, 20);}
-        } */
-
-        .micbtn {
-            border-radius: 50%;
-            width: 90px;
-            height: 90px;
-            font-size: 45px;
-            background-color:rgb(117, 191, 247);
-            color: #fff;
-            border: 7px solid #fff;
-            margin-top: 20px;
-            animation-name: micbtn;
-            animation-duration: 2s;
-            animation-iteration-count: infinite;
-            transition: 0.3s;
-
-        }
-        
-        .micbtn:focus {
-            outline: none;
-        }
-        .micbtn:hover {
-            cursor: pointer;
-            background-color:rgb(117, 191, 247);
-            color: rgb(152, 59, 171);
-        }
-        h1 {
-            margin-bottom: 60px;
-        }
-
-        
-    </style>
 </head>
+
 <body style="background-color: {{ request.session.color }};">
+    <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+    <div id='stars'></div>
+    <div id='stars2'></div>
+    <div id='stars3'></div>
+    <!-- <div id='title'>
+          <span>
+            PURE CSS
+          </span>
+          <br>
+          <span>
+            PARALLAX PIXEL STARSvcbcbcbcbcb
+          </span>
+        </div> -->
     <div class="container">
-        <h1 class="text-center">HELLO!</h1>
-        
         <div class="activityLogWrapper">
-            <h3>You're Commands:</h3>
-            <div class="activityLog text-center">
+            <h3>Recent Commands:</h3>
+            <div class="activityLog">
                 {% for item in all_items %}
-                    <p>{{ item.item }}</p>
+                <p>&nbsp;{{ item.item }}</p>
                 {% endfor %}
             </div>
             <form action="/clearActivityLog">
@@ -89,11 +43,11 @@
             </form>
         </div>
         <div class="main-content-wrapper">
-        <p class="phrase">{{last_phrase.content.upper}}</p>
+        
         <div class="main-content">
             
             {% for i in request.session.main_content %}
-                {{ i | safe }}
+            {{ i | safe }}
             {% endfor %}
 
             {% if last_phrase.content == request.session.last_news_command %}
@@ -105,6 +59,12 @@
                 {% endfor %}
             {% endif %}
             
+            <p>{{last_phrase.content.upper}}</p>
+            <hr>
+            <div id="loading-wrapper" style="display: none;">
+                <div id="loading-text">LISTENING</div>
+                <div id="loading-content"></div>
+            </div>
         </div>
     </div>
         <div class="button text-center">
@@ -113,28 +73,7 @@
                 <button id="micbtn" type="submit" class="micbtn"><i class="fa fa-microphone"></i></button>
             </form>
         </div>
-
     </div>
-    
 </body>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <script type="text/javascript">
-        // function submitOnEnter(inputElement, event) {
-        //     if (event.keyCode == 13) { // No need to do browser specific checks. It is always 13.
-        //     print("YO!")
-        //         inputElement.form.submit();
-        //     }
-        // }
-        $(document).ready(function(e){
-            console.log("hello");
-           
-            $('body').keyup(function(e){
-                if(e.keyCode == 32){
-                    $("#micbtn").click();
-                }
-            });
-           
-        });
-    </script>
 </html>
