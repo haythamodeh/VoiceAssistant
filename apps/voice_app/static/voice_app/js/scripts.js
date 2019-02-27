@@ -10,7 +10,13 @@ $(document).ready(function (e) {
 });
 
 $(document).ready(function () {
+    
+    
     $("#micbtn").click(function () {
         $("#loading-wrapper").css("display", "block");
+        $("#blur").css("filter", "blur(8px)");
+        $("#loading-wrapper").css("z-index", "10");
+        
     });
+
 });
