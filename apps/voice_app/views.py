@@ -28,7 +28,7 @@ def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
     Phrase.objects.create(content=phrase)
     tts.save("audio.mp3")
-    os.system("mpg123 audio.mp3")
+    os.system("mpg 123 audio.mp3")
 
 def postImage(phrase):
     Phrase.objects.create(content=phrase)
