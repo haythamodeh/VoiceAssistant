@@ -14,10 +14,11 @@
     <link rel="stylesheet" href="{% static 'voice_app/css/style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
     <script src="{% static 'voice_app/js/scripts.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
     <title>Voice App</title>
 </head>
 
-<body style="background-color: {{ request.session.color }};">
+<body style="background-color: {{ request.session.color }} !important;">
     <div id="loading-wrapper" style="display: none;">
         <div class="animated infinite pulse" id="loading-text">LISTENING</div>
         <div id="loading-content"></div>
@@ -60,6 +61,23 @@
                         {{ i | safe }}
                         {% endfor %}
                     </div>
+                    {% endif %}
+
+                    {% if last_phrase.content == request.session.command_for_data %}
+
+                        <p>Air Quality Index (AQI) for major cities in this country</p>
+
+                        <p style="display:none" id="data_for_viz">{{ request.session.chart_data_city_scores }} </p>
+                        <p style="display:none" id="label_for_viz">{{ request.session.chart_data_city_names }} </p>
+    
+                        <canvas 
+                            id="chartjs-1" 
+                            class="chartjs" 
+                            width="770" 
+                            height="325" 
+                            style="display: block; width: 770px; height: 385px;"
+                        ></canvas>
+
                     {% endif %}
 
                     {% if last_phrase.content == request.session.last_news_command %}

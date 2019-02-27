@@ -17,19 +17,18 @@ import urllib.request
 from bs4 import BeautifulSoup
 import wikipedia
 from newsapi import NewsApiClient
+import numpy as np
 
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
-
+av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
 
-
 def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
-    tts.save("audio.mp3")
-    os.system("audio.mp3")
     Phrase.objects.create(content=phrase)
-
+    tts.save("audio.mp3")
+    os.system("mpg123 audio.mp3")
 
 def postImage(phrase):
     Phrase.objects.create(content=phrase)
@@ -104,60 +103,122 @@ def voice(request):
     if "how are you?" in command:
         talkToMe("i'm doing fine, thanks for asking")
 
-    BACKGROUND_REGEX = re.compile(r'(background)')
-    if BACKGROUND_REGEX.match(command.lower()):
-        print("Sam's background color")
-        print(command.lower())
-        COLOR_REGEX = re.compile(r'(?<=\bto\s)(\w+)')
-        color = "teal"
-        if COLOR_REGEX.search(command.lower()):
-            regex_color_result = COLOR_REGEX.search(command.lower())
-            print("the color from the command")
-            print(regex_color_result)
-            color = regex_color_result.group(0)
-        request.session["color"] = color
+    # BACKGROUND_REGEX = re.compile(r'(background)')
+    # if BACKGROUND_REGEX.match(command.lower()):
+    #     print("Sam's background color")
+    #     print(command.lower())
+    #     COLOR_REGEX = re.compile(r'(?<=\bto\s)(\w+)')
+    #     color = "teal"
+    #     if COLOR_REGEX.search(command.lower()):
+    #         regex_color_result = COLOR_REGEX.search(command.lower())
+    #         print("the color from the command")
+    #         print(regex_color_result)
+    #         color = regex_color_result.group(0)
+    #         print(color)
+    #     request.session["color"] = color   
 
-    if 'current weather' in command:
-        talkToMe("What city")
-        city = myCommand(request)
+    # test: "current weather in los angeles"
+    WEATHER_REGEX_COMMAND = re.compile(r'(current weather)')
+    if type(command) is str:
+        if WEATHER_REGEX_COMMAND.search(command.lower()):
+            WEATHER_CITY_REGEX = re.compile(r'(?<=\bweather in\s)(.*)')
+            city = "los angeles"
+            if WEATHER_CITY_REGEX.search(command.lower()):
+                weather_regex_result = WEATHER_CITY_REGEX.search(command.lower())
+                city = weather_regex_result.group(0)
 
-        obs = owm.weather_at_place(city)
-        w = obs.get_weather()
-        temp = w.get_temperature('fahrenheit')
-        status = w.get_status()
-        print(temp)
-        talkToMe("current weather in " + city + " is " + str(status) +
-                 " with a temerature of " + str(temp["temp"]) + " degrees")
+                obs = owm.weather_at_place(city)
+                # obs = owm.weather_at_id(2643741)
+                w = obs.get_weather()
+                temp = w.get_temperature('fahrenheit')
+                status = w.get_status()
+                print(temp)
+                talkToMe("current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
 
-    PIC_REGEX_COMMAND = re.compile(r'\w+(\s+pictures*\b)')
-    if PIC_REGEX_COMMAND.match(command.lower()):
-        request.session['command_for_pics'] = "showing " + command
-        PIC_REGEX = re.compile(r'\w+(?=\s+pictures*\b)')
-        command_subject = "frog"
-        all_pics = []
-        formated_pics = []
-        if PIC_REGEX.match(command.lower()):
-            regex_result = PIC_REGEX.match(command.lower())
-            command_subject = regex_result.group(0)
-        print("Sam, this is the command")
-        talkToMe("showing " + command)
-        # talkToMe(command_subject)
-        flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + \
-            command + "&tag_mode=any&format=json&nojsoncallback=1"
-        flickr_res = requests.get(flickrApiUrl)
-        for i in flickr_res.json()['photos']['photo']:
-            all_pics.append(i['id'])
-        for m in all_pics:
-            url_complete = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&photo_id=" + \
-                m + "&format=json&nojsoncallback=1"
-            img_res = requests.get(url_complete)
-            images = img_res.json()['sizes']['size']
-            for j in images:
-                if j['label'] == 'Medium':
-                    formated_pics.append(
-                        '<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
-        request.session['main_content'] = formated_pics
+    # # test: "plot for italy"
+    DATAVIZ_REGEX_COMAND = re.compile(r'(plot)')
+    if type(command) is str:
+        if DATAVIZ_REGEX_COMAND.search(command.lower()):
+            DATA_REGEX = re.compile(r'(?<=\bfor\s)(.*)')
+            data = "italy"
+            if DATA_REGEX.search(command.lower()):
+                data_regex_result = DATA_REGEX.search(command.lower())
+                data = data_regex_result.group(0)
+                # testing
+                country = data
+                try:
+                    airvis_url = "https://www.airvisual.com/" + country
+                    # print(airvis_url)
+                    airvis_res = urllib.request.urlopen(airvis_url)
+                    # print(airvis_res)
+                    airvis_html = airvis_res.read()
+                    # print(airvis_html)
+                    airvis_soup = BeautifulSoup(airvis_html, 'html.parser')
+                    # print(airvis_soup)
+                    # print("before findall")
+                    result = airvis_soup.find(attrs={'class': 'ranking-list-items'})
+                    new_result = result.findAll(text=True)
+                    print(new_result)
+                    city_names = ""
+                    city_scores = ""
+                    clean_result = []
+                    for i in new_result:
+                        if i != ' ':
+                            clean_result.append(i.strip())
+                    print(clean_result)
+                    for m in clean_result:
+                        print('clean result')
+                        print(m)
+                        print('length')
+                        print(len(m))
+                        if len(m) > 3:
+                            city_names += (m + ",")
+                        # todo: compare the values, if more than 10 then add it
+                        elif len(m) <=3 and len(m) > 2:
+                            city_scores += (m + ",")
+                    print(city_names)
+                    print(city_scores)
+                    request.session['chart_data_city_names'] = city_names[:-1]
+                    request.session['chart_data_city_scores'] = city_scores[:-1]
+                    talkToMe("plotting " + data)
+                    request.session['command_for_data'] = "plotting " + data
+                except:
+                    talkToMe(data + ", Either this is not a country, or there are no stations there")
 
+    # test: "cat pictures"
+    PIC_REGEX_COMMAND = re.compile(r'(\s+pictures*\b)')
+    if type(command) is str:      
+        if PIC_REGEX_COMMAND.search(command.lower()):
+            # print("sam this thing right here!")
+            # print(command.lower())
+            PIC_REGEX = re.compile(r'\w+(?=\s+pictures*\b)')
+            command_subject = "frog"
+            all_pics = []
+            formated_pics = []
+            if PIC_REGEX.search(command.lower()):
+                regex_result = PIC_REGEX.search(command.lower())
+                # print("Sam this is the REAL SHIT")
+                # print(regex_result)
+                command_subject = regex_result.group(0)
+                # print("Sam, this is the command for a reall OG")
+                # print(command_subject)
+                request.session['command_for_pics'] = "showing " + command_subject + " pictures"
+                talkToMe("showing " + command_subject + " pictures")
+                flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + command_subject + "&tag_mode=any&format=json&nojsoncallback=1"
+                flickr_res = requests.get(flickrApiUrl)
+                for i in flickr_res.json()['photos']['photo']:
+                    all_pics.append(i['id'])
+                for m in all_pics:
+                    url_complete = "https://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&photo_id=" + \
+                        m + "&format=json&nojsoncallback=1"
+                    img_res = requests.get(url_complete)
+                    images = img_res.json()['sizes']['size']
+                    for j in images:
+                        if j['label'] == 'Medium':
+                            formated_pics.append('<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
+                request.session['main_content'] = formated_pics
+
+    #test: "open website yahoo.com"
     elif 'open website' in command:
         reg_ex = re.search('open website (.+)', command)
         if reg_ex:
@@ -195,6 +256,7 @@ def voice(request):
             mail.close()
 
             talkToMe('Email sent.')
+
     elif 'music' in command:
         talkToMe('What song?')
         song = myCommand(request)
@@ -220,10 +282,16 @@ def voice(request):
         player.set_media(Media)
         player.play()
 
-    elif 'who is' in command:
-        talkToMe('What name?')
-        name = myCommand(request)
-        talkToMe(wikipedia.summary(name, sentences=1))
+    # test: "who is bob ross"
+    WHOIS_REGEX = re.compile(r'(who is)')
+    if type(command) is str: 
+        if WHOIS_REGEX.match(command.lower()):
+            PERSON_REGEX = re.compile(r'(?<=\bwho is\s)(.*)')
+            name = "bob ross"
+            if PERSON_REGEX.search(command.lower()):
+                regex_person_result = PERSON_REGEX.search(command.lower())
+                name = regex_person_result.group(0)
+                talkToMe(wikipedia.summary(name, sentences=1))
 
     else:
         talkToMe("I don't understand what you are saying")
