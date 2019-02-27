@@ -22,8 +22,7 @@ api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
-# Create your views here.
-# words = []
+
 
 def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
@@ -37,7 +36,6 @@ def postImage(phrase):
 
 
 def index(request):
-    # talkToMe("Hello!")
     if not "color" in request.session:
         request.session["color"] = "white"
 
@@ -55,7 +53,7 @@ def clearActivityLog(request):
         del request.session["color"]
     if "main_content" in request.session:
         del request.session["main_content"]
-    Phrase.objects.create(content = "How can I help you?")
+    Phrase.objects.create(content="How can I help you?")
     all_items = ItemList.objects.all()
     all_items.delete()
     return redirect("/")
@@ -73,11 +71,8 @@ def myCommand(request):
         command = r.recognize_google(audio)
         print("You said: " + command)
 
-    # loop back to continue to listen for commands
     except sr.UnknownValueError:
-        talkToMe("Did not recognize your voice")
-        # voice(myCommand(command))
-        return redirect ("/")
+        return redirect("/")
 
     phrase = r.recognize_google(audio)
     ItemList.objects.create(item=phrase)
@@ -88,11 +83,6 @@ def myCommand(request):
 def voice(request):
     talkToMe("How can I help you?")
     command = myCommand(request)
-
-    # if "open Reddit python" in command:
-    #         chrome_path = "open -a /Applications/Google\ Chrome.app %s"
-    #         url = "https://www.reddit.com/r/python"
-    #         webbrowser.get(chrome_path).open(url)
 
     if "top news" in command:
         print("in news command")
@@ -125,19 +115,19 @@ def voice(request):
             print("the color from the command")
             print(regex_color_result)
             color = regex_color_result.group(0)
-        request.session["color"] = color   
+        request.session["color"] = color
 
     if 'current weather' in command:
         talkToMe("What city")
         city = myCommand(request)
 
         obs = owm.weather_at_place(city)
-        # obs = owm.weather_at_id(2643741)
         w = obs.get_weather()
         temp = w.get_temperature('fahrenheit')
         status = w.get_status()
         print(temp)
-        talkToMe("current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
+        talkToMe("current weather in " + city + " is " + str(status) +
+                 " with a temerature of " + str(temp["temp"]) + " degrees")
 
     PIC_REGEX_COMMAND = re.compile(r'\w+(\s+pictures*\b)')
     if PIC_REGEX_COMMAND.match(command.lower()):
@@ -152,7 +142,8 @@ def voice(request):
         print("Sam, this is the command")
         talkToMe("showing " + command)
         # talkToMe(command_subject)
-        flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + command + "&tag_mode=any&format=json&nojsoncallback=1"
+        flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + \
+            command + "&tag_mode=any&format=json&nojsoncallback=1"
         flickr_res = requests.get(flickrApiUrl)
         for i in flickr_res.json()['photos']['photo']:
             all_pics.append(i['id'])
@@ -163,7 +154,8 @@ def voice(request):
             images = img_res.json()['sizes']['size']
             for j in images:
                 if j['label'] == 'Medium':
-                    formated_pics.append('<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
+                    formated_pics.append(
+                        '<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
         request.session['main_content'] = formated_pics
 
     elif 'open website' in command:
@@ -175,8 +167,6 @@ def voice(request):
             print('Done!')
         else:
             pass
-    # elif 'cat' in command:
-    #     postImage("http://pngimg.com/uploads/cat/cat_PNG50509.png")
 
     elif 'email' in command:
         talkToMe('Who is the recipient?')
@@ -234,5 +224,8 @@ def voice(request):
         talkToMe('What name?')
         name = myCommand(request)
         talkToMe(wikipedia.summary(name, sentences=1))
+
+    else:
+        talkToMe("I don't understand what you are saying")
 
     return redirect("/")
