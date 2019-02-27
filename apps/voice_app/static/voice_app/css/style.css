@@ -212,9 +212,9 @@ body {
     /* position: fixed; */
     position: absolute;
     margin: 0 auto;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 40%;
+    left: 45%;
+    /* transform: translate(-50%, -50%); */
     /* left: 0;
     top: 0; */
 }
@@ -222,12 +222,13 @@ body {
 #loading-text {
     display: block;
     position: absolute;
-    top: 21%;
-    left: 52%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     color: #fff;
     width: 100px;
     height: 30px;
-    margin: -7px 0 0 -45px;
+    margin: 45px 0 0 -45px;
     text-align: center;
     font-family: 'PT Sans Narrow', sans-serif;
     font-size: 48px;
@@ -235,9 +236,10 @@ body {
 
 #loading-content {
     display: block;
-    position: relative;
-    left: 50%;
+    position: absolute;
     top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 344px;
     height: 344px;
     margin: -85px 0 0 -85px;
