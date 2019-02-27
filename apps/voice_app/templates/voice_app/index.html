@@ -12,16 +12,22 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
     {% load static %}
     <link rel="stylesheet" href="{% static 'voice_app/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
     <script src="{% static 'voice_app/js/scripts.js' %}"></script>
     <title>Voice App</title>
 </head>
 
 <body style="background-color: {{ request.session.color }};">
-    <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
-    <div id='stars'></div>
-    <div id='stars2'></div>
-    <div id='stars3'></div>
-    <!-- <div id='title'>
+    <div id="loading-wrapper" style="display: none;">
+        <div class="animated infinite pulse" id="loading-text">LISTENING</div>
+        <div id="loading-content"></div>
+    </div>
+    <div id="blur">
+        <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+        <div id='stars'></div>
+        <div id='stars2'></div>
+        <div id='stars3'></div>
+        <!-- <div id='title'>
           <span>
             PURE CSS
           </span>
@@ -30,50 +36,74 @@
             PARALLAX PIXEL STARSvcbcbcbcbcb
           </span>
         </div> -->
-    <div class="container">
-        <div class="activityLogWrapper">
-            <h3>Recent Commands:</h3>
-            <div class="activityLog">
-                {% for item in all_items %}
-                <p>&nbsp;{{ item.item }}</p>
-                {% endfor %}
+        <div class="container">
+            <div class="activityLogWrapper">
+                <h3>Recent Commands:</h3>
+                <div class="activityLog animated pulse">
+                    {% for item in all_items %}
+                    <p>&nbsp;{{ item.item }}</p>
+                    {% endfor %}
+                </div>
+                <form action="/clearActivityLog">
+                    <input type="submit" value="Clear" class="clearbtn">
+                </form>
             </div>
-            <form action="/clearActivityLog">
-                <input type="submit" value="Clear" class="btn btn-danger">
-            </form>
-        </div>
-        <div class="main-content-wrapper">
-        
-        <div class="main-content">
-            
-            {% for i in request.session.main_content %}
-            {{ i | safe }}
-            {% endfor %}
+            <div class="main-content-wrapper">
 
-            {% if last_phrase.content == request.session.last_news_command %}
-                {% for article in request.session.bitcoin.articles %}
-                        <p style="color: green;">{{article.title}}</p>
-                        <p>{{article.content}}</p>
-                        <p><a href="{{article.url}}" target="_blank">{{article.url}}</a></p>
-                        <hr>
-                {% endfor %}
-            {% endif %}
-            
-            <p>{{last_phrase.content.upper}}</p>
-            <hr>
-            <div id="loading-wrapper" style="display: none;">
-                <div id="loading-text">LISTENING</div>
-                <div id="loading-content"></div>
+                <div class="main-content">
+                    <p class="animated slideInDown" style="font-size: 40px;">{{last_phrase.content.upper}}</p>
+                    <hr style="border-color: rgba(255, 255, 255, 0.39);">
+
+                    {% if last_phrase.content == request.session.command_for_pics %}
+                    <div class="container animated slideInDown">
+                        {% for i in request.session.main_content %}
+                        {{ i | safe }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if last_phrase.content == request.session.last_news_command %}
+                    {% for article in request.session.bitcoin.articles %}
+                    <p style="color: green; font-size: 28px;
+                        ">{{article.title}}</p>
+                    <p style="padding: 0 32px;">{{article.content}}</p>
+                    <p style="padding: 0 32px;"><a href="{{article.url}}" target="_blank">{{article.url}}</a></p>
+
+                    {% endfor %}
+                    {% endif %}
+
+                    {% if "weatherimage" in request.session %}
+                        <img class="weatherimage animated fadeInUp" src="{{request.session.weatherimage}}" alt="weatherimage">
+                    {% endif %}
+                </div>
+                <div class="button text-center">
+                    <form action="/voice">
+                        <!-- <input id = "myBtn" type="submit" value="Press To Talk" class="btn btn-primary fa fa-microphone" onkeypress="submitOnEnter(this, event);" /> -->
+                        <button id="micbtn" type="submit" class="micbtn"><i
+                                class="fa fa-microphone animated infinite pulse slow"></i></button>
+                    </form>
+                </div>
             </div>
-        </div>
-    </div>
-        <div class="button text-center">
-            <form action="/voice">
-                <!-- <input id = "myBtn" type="submit" value="Press To Talk" class="btn btn-primary fa fa-microphone" onkeypress="submitOnEnter(this, event);" /> -->
-                <button id="micbtn" type="submit" class="micbtn"><i class="fa fa-microphone"></i></button>
-            </form>
+
         </div>
     </div>
 </body>
+
+<script type="text/javascript">
+    // function submitOnEnter(inputElement, event) {
+    //     if (event.keyCode == 13) { // No need to do browser specific checks. It is always 13.
+    //     print("YO!")
+    //         inputElement.form.submit();
+    //     }
+    // }
+    $(document).ready(function (e) {
+        console.log("hello");
+        $('body').keyup(function (e) {
+            if (e.keyCode == 32) {
+                $("#micbtn").click();
+            }
+        });
+    });
+</script>
 
 </html>
