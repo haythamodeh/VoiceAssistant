@@ -23,22 +23,18 @@ api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
-# Create your views here.
-# words = []
 
 def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
+    Phrase.objects.create(content=phrase)
     tts.save("audio.mp3")
     os.system("mpg123 audio.mp3")
-    Phrase.objects.create(content=phrase)
-
 
 def postImage(phrase):
     Phrase.objects.create(content=phrase)
 
 
 def index(request):
-    # talkToMe("Hello!")
     if not "color" in request.session:
         request.session["color"] = "white"
 
@@ -56,7 +52,7 @@ def clearActivityLog(request):
         del request.session["color"]
     if "main_content" in request.session:
         del request.session["main_content"]
-    Phrase.objects.create(content = "How can I help you?")
+    Phrase.objects.create(content="How can I help you?")
     all_items = ItemList.objects.all()
     all_items.delete()
     return redirect("/")
@@ -74,11 +70,8 @@ def myCommand(request):
         command = r.recognize_google(audio)
         print("You said: " + command)
 
-    # loop back to continue to listen for commands
     except sr.UnknownValueError:
-        talkToMe("Did not recognize your voice")
-        # voice(myCommand(command))
-        return redirect ("/")
+        return redirect("/")
 
     phrase = r.recognize_google(audio)
     ItemList.objects.create(item=phrase)
@@ -89,11 +82,6 @@ def myCommand(request):
 def voice(request):
     talkToMe("How can I help you?")
     command = myCommand(request)
-
-    # if "open Reddit python" in command:
-    #         chrome_path = "open -a /Applications/Google\ Chrome.app %s"
-    #         url = "https://www.reddit.com/r/python"
-    #         webbrowser.get(chrome_path).open(url)
 
     if "top news" in command:
         print("in news command")
@@ -304,5 +292,8 @@ def voice(request):
                 regex_person_result = PERSON_REGEX.search(command.lower())
                 name = regex_person_result.group(0)
                 talkToMe(wikipedia.summary(name, sentences=1))
+
+    else:
+        talkToMe("I don't understand what you are saying")
 
     return redirect("/")
