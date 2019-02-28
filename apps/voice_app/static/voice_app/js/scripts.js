@@ -18,9 +18,14 @@ $(document).ready(function () {
         $("#loading-wrapper").css("z-index", "10");
         
     });
-
+    var display = true;
     $(".skills").click(function(){
-        $("#commands_wrapper").css("display" , "inline");
+        display = !display
+        if (display)
+            $("#commands_wrapper").css("display" , "inline");
+        else
+            $("#commands_wrapper").css("display" , "none");
+
     });
 
 });
