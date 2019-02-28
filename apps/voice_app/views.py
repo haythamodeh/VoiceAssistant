@@ -21,7 +21,6 @@ import numpy as np
 # from googlesearch.googlesearch import GoogleSearch
 from googlesearch import search
 
-
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
