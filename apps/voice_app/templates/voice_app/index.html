@@ -63,19 +63,30 @@
                     </div>
                     {% endif %}
 
-                    <!-- <div>
-                        <h3>Quality of Life Ratings for Rapture</h3>
-                        <p style="display:none" id="data_for_viz_radar">1,2,3,4,5,6,7</p>
-                        <p style="display:none" id="label_for_viz_radar">red,blue,green,orange,pink,black,purple</p>
+                    {% if last_phrase.content == request.session.command_for_city_scores_compare %}
+                        <div>
+
+                            <br>
+
+                            <h3>Quality of Life Ratings for {{ request.session.city_score_info_name }}</h3>
+                            <p style="display:none" id="data_for_viz_radar">{{ request.session.data_for_viz_radar }}</p>
+        
+                            <br>
+
+                            <canvas 
+                                id="chartjs-2" 
+                                class="chartjs" 
+                                width="770" 
+                                height="425" 
+                                style="display: block; width: 770px; height: 385px;"
+                            ></canvas>
     
-                        <canvas 
-                            id="chartjs-2" 
-                            class="chartjs" 
-                            width="770" 
-                            height="325" 
-                            style="display: block; width: 770px; height: 385px;"
-                        ></canvas>
-                    </div> -->
+                            <br>
+                            <br>
+    
+                            <i>{{ request.session.city_score_info_summary|safe }}</i>
+                        </div>
+                    {% endif %}
 
                     {% if last_phrase.content == request.session.command_for_data %}
 

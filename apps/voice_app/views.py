@@ -54,6 +54,7 @@ def clearActivityLog(request):
         del request.session["main_content"]
     if "weatherimage" in request.session:
         del request.session["weatherimage"]
+    request.session.flush()
     Phrase.objects.create(content = "How can I help you?")
     all_items = ItemList.objects.all()
     all_items.delete()
@@ -86,7 +87,8 @@ def voice(request):
     talkToMe("How can I help you?")
     command = myCommand(request)
     WEATHER_REGEX_COMMAND = re.compile(r'(current weather)')
-    DATAVIZ_REGEX_COMAND = re.compile(r'(for)')
+    CITY_SCORE_REGEX_COMMAND = re.compile(r'(scores for)')
+    DATAVIZ_REGEX_COMAND = re.compile(r'(pollution for)')
     PIC_REGEX_COMMAND = re.compile(r'(\s+pictures*\b)')
     WHOIS_REGEX = re.compile(r'(who is)')
 
@@ -214,10 +216,51 @@ def voice(request):
                 except:
                     talkToMe("No information on " + name)
 
+        # test: "scores for seattle"
+        if CITY_SCORE_REGEX_COMMAND.search(command.lower()):
+            CITY_REGEX_SCORED = re.compile(r'(?<=\bscores for\s)(.*)')
+            scored_city = 'los-angeles'
+            if CITY_REGEX_SCORED.search(command.lower()):
+                regex_city_scored_result = CITY_REGEX_SCORED.search(command.lower())
+                scored_city = regex_city_scored_result.group(0)
+                scored_city_formatted = scored_city.replace(" ","-")
+                try:
+                    scored_city_formatted_url = "https://api.teleport.org/api/urban_areas/slug:" + scored_city_formatted + "/scores/"
+                    teleport_api_res = requests.get(scored_city_formatted_url)
+                    request.session['city_score_info_name'] = scored_city.title()
+                    request.session['city_score_info_score'] = int(teleport_api_res.json()['teleport_city_score'])
+                    request.session['city_score_info_summary'] = teleport_api_res.json()['summary']
+                    request.session['data_for_viz_radar'] = ""
+                    city_score_categories = teleport_api_res.json()['categories']
+                    scores_for_cities_arr = [0,0,0,0,0,0,0,0]
+                    for i in city_score_categories:
+                        if i['name'] == 'Housing':
+                            scores_for_cities_arr[0] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Cost of Living':
+                            scores_for_cities_arr[1] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Healthcare':
+                            scores_for_cities_arr[2] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Education':
+                            scores_for_cities_arr[3] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Environmental Quality':
+                            scores_for_cities_arr[4] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Economy':
+                            scores_for_cities_arr[5] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Outdoors':
+                            scores_for_cities_arr[6] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Commute':
+                            scores_for_cities_arr[7] = round(i['score_out_of_10'],2)
+                    for x in scores_for_cities_arr:
+                        request.session['data_for_viz_radar'] += (str(x) + ",")
+                    request.session['data_for_viz_radar'] = request.session['data_for_viz_radar'][:-1]
+                    print(request.session['data_for_viz_radar'])
+                    request.session['command_for_city_scores_compare'] = "Quality of Life scores for " + scored_city
+                    talkToMe("Quality of Life scores for " + scored_city)
+                except:
+                    talkToMe("Either " + scored_city + " is not a city, or it has not been evaluated")
+
         # test: "cat pictures"
         if PIC_REGEX_COMMAND.search(command.lower()):
-            print("sam this thing right here!")
-            print(command.lower())
             PIC_REGEX = re.compile(r'\w+(?=\s+pictures*\b)')
             command_subject = "frog"
             all_pics = []
