@@ -353,3 +353,8 @@ body {
 hr {
     border-top: 1px solid rgba(255, 255, 255, 0.45);
 }
+
+.weatherimage {
+    width: 150px;
+    height: 150px;
+}

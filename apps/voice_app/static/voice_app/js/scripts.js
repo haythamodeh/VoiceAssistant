@@ -21,6 +21,38 @@ $(document).ready(function () {
 
 });
 
+// $(document).ready(function () {
+//     var chart_data = document.getElementById("data_for_viz_radar").innerHTML.split(",")
+//     var chart_labels = document.getElementById("label_for_viz_radar").innerHTML.split(",")
+//     console.log("Sam")
+//     console.log(chart_data)
+//     console.log(chart_labels)
+//     var ctx = document.getElementById("chartjs-2").getContext('2d');
+//     var myChart = new Chart(ctx, {
+//         type: 'radar',
+//         data: {
+//             labels: chart_labels,
+//             datasets: [
+//                 {
+//                     label: "1950",
+//                     fill: true,
+//                     backgroundColor: "rgba(255,205,86,0.2)",
+//                     borderColor: "rgba(255,205,86,1)",
+//                     pointBorderColor: "#fff",
+//                     pointBackgroundColor: "rgba(179,181,198,1)",
+//                     data: chart_data
+//                 }
+//             ]
+//         },
+//         options: {
+//             title: {
+//                 display: true,
+//                 text: 'Scores are out of 10'
+//             }
+//         }
+//     });
+// });
+
 $(document).ready(function () {
     var chart_data = document.getElementById("data_for_viz").innerHTML.split(",")
     var chart_labels = document.getElementById("label_for_viz").innerHTML.split(",")
