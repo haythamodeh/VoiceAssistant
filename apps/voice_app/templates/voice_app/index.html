@@ -29,13 +29,13 @@
         <div id='stars2'></div>
         <div id='stars3'></div>
         <!-- <div id='title'>
-          <span>
-            PURE CSS
-          </span>
-          <br>
-          <span>
-            PARALLAX PIXEL STARSvcbcbcbcbcb
-          </span>
+            <span>
+                PURE CSS
+            </span>
+            <br>
+            <span>
+                PARALLAX PIXEL STARSvcbcbcbcbcb
+            </span>
         </div> -->
         <div class="container">
             <div class="activityLogWrapper">
@@ -61,6 +61,42 @@
                         {{ i | safe }}
                         {% endfor %}
                     </div>
+                    {% endif %}
+
+                    {% if last_phrase.content == 'I love you too' %}
+                        <h3>You're so loved!</h3>
+                        <iframe 
+                            width="760" 
+                            height="515" 
+                            src="https://www.youtube.com/embed/Uq734_nZ7Eo?rel=0&autoplay=1&start=13" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    {% endif %}
+
+                    {% if last_phrase.content == 'Oh look, it is richard nixon' %}
+                        <p>So much Rich</p>
+                        <img width="300px" height="300px" src="https://images-na.ssl-images-amazon.com/images/I/718e9Qe67RL.jpg" alt="nix1">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td><img style="width:200px; height:200px"src="https://www.washingtonpost.com/pbox.php?url=http://www.washingtonpost.com/blogs/in-the-loop/files/2013/08/nixon1-300x198.jpg&w=1484&op=resize&opt=1&filter=antialias&t=20170517" alt="nixon"></td>
+                                    <td><img style="width:200px; height:200px"src="https://66.media.tumblr.com/805ed63647377f328df72ee16ee7e1ee/tumblr_ne1xwyFIsG1u12utdo1_400.jpg" alt="nixon"></td>
+                                    <td><img style="width:200px; height:200px"src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUFaYQEs9sPI1KPoSYZpypprLtYvDF-rfjIdi3HCvs_fn1Ywj5" alt="nixon"></td>
+                                </tr>
+                                <tr>
+                                    <td><img style="width:200px; height:200px"src="https://ocweekly.com/wp-content/uploads/2018/11/6442178_dick.jpg" alt="nixon"></td>
+                                    <td><img style="width:200px; height:200px"src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTumnSa_XY_qZIvd9gno3tYq7mVR7p4FY0XshboeD2DfyXIgZru" alt="nixon"></td>
+                                    <td><img style="width:200px; height:200px"src="https://www.picclickimg.com/d/l400/pict/113615116600_/Tricky-Dick-Richard-Nixon-stoner-poster-21-x.jpg" alt="nixon"></td>
+                                </tr>
+                                <tr>
+                                    <td><img style="width:200px; height:200px"src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3g2Y8mpVpX6r7Z8_ZV5B6vFLajdSmYYlNSicL6z2fRBL3n3I" alt="nixon"></td>
+                                    <td><img style="width:200px; height:200px"src="https://media.mnn.com/assets/images/2010/01/intro_5.jpg.560x0_q80_crop-smart.jpg" alt="nixon"></td>
+                                    <td><img style="width:200px; height:200px"src="https://law.duke.edu/sites/default/files/timeline_images/young_nixon.jpeg" alt="nixon"></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     {% endif %}
 
                     {% if last_phrase.content == request.session.command_for_city_scores_compare %}

@@ -116,6 +116,12 @@ def voice(request):
     elif "hello" in command:
         talkToMe("hey")
 
+    elif "I love you" in command:
+        talkToMe("I love you too")
+
+    elif "dick pics" in command:
+        talkToMe("Oh look, it is richard nixon")
+
     elif "how are you" in command:
         talkToMe("i'm doing fine, thanks for asking")
 
