@@ -35,10 +35,6 @@ def talkToMe(phrase):
     Phrase.objects.create(content=phrase)
 
 
-def playMusic():
-    os.system("mpg123 Metallica.mp3")
-
-
 def postImage(phrase):
     Phrase.objects.create(content=phrase)
 
@@ -46,6 +42,8 @@ def postImage(phrase):
 def index(request):
     if not "color" in request.session:
         request.session["color"] = "white"
+    if 'style' not in request.session:
+        request.session['style'] = "display:none;"
 
     itemlist = ItemList.objects.all().order_by("-id")
     phrases = Phrase.objects.last()
@@ -177,8 +175,7 @@ def voice(request):
         best = video.getbest()
         playurl = best.url
         request.session['url'] = playurl
-        request.session['width'] = "0"
-        request.session['height'] = "0"
+        request.session['style'] = "display:none;"
 
     elif 'clip' in command:
         talkToMe('What song?')

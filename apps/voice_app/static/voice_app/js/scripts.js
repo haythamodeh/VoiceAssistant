@@ -18,7 +18,7 @@ $(document).ready(function () {
         $("#loading-wrapper").css("z-index", "10");
         
     });
-    var display = true;
+    var display = false;
     $(".skills").click(function(){
         display = !display
         if (display)
