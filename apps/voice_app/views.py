@@ -19,6 +19,13 @@ import wikipedia
 from newsapi import NewsApiClient
 import numpy as np
 import youtube_dl
+# from googlesearch.googlesearch import GoogleSearch
+from googlesearch import search
+import webbrowser
+
+
+
+
 
 Instance = vlc.Instance()
 player = Instance.media_player_new()
@@ -62,7 +69,8 @@ def clearActivityLog(request):
         del request.session["main_content"]
     if "weatherimage" in request.session:
         del request.session["weatherimage"]
-    Phrase.objects.create(content="How can I help you?")
+    request.session.flush()
+    Phrase.objects.create(content = "How can I help you?")
     all_items = ItemList.objects.all()
     all_items.delete()
     talkToMe("How Can I help you?")
@@ -94,7 +102,8 @@ def voice(request):
     talkToMe("How can I help you?")
     command = myCommand(request)
     WEATHER_REGEX_COMMAND = re.compile(r'(current weather)')
-    DATAVIZ_REGEX_COMAND = re.compile(r'(for)')
+    CITY_SCORE_REGEX_COMMAND = re.compile(r'(scores for)')
+    DATAVIZ_REGEX_COMAND = re.compile(r'(pollution for)')
     PIC_REGEX_COMMAND = re.compile(r'(\s+pictures*\b)')
     WHOIS_REGEX = re.compile(r'(who is)')
 
@@ -118,6 +127,12 @@ def voice(request):
 
     elif "hello" in command:
         talkToMe("hey")
+
+    elif "I love you" in command:
+        talkToMe("I love you too")
+
+    elif "dick pics" in command:
+        talkToMe("Oh look, it is richard nixon")
 
     elif "how are you" in command:
         talkToMe("i'm doing fine, thanks for asking")
@@ -189,15 +204,10 @@ def voice(request):
         best = video.getbest()
         playurl = best.url
         request.session['url'] = playurl
-        request.session['width'] = "760"
-        request.session['height'] = "515"
+        request.session['style'] = "display:inline;"
 
     elif 'stop' in command:
-        del request.session['url']
-        if 'width' in request.session or 'height' in request.session:
-            del request.session['width']
-            del request.session['height'] 
-        # player.stop()
+        request.session['style'] = "display:none;"
 
     # test: "open website yahoo.com"
     elif 'open website' in command:
@@ -212,6 +222,32 @@ def voice(request):
 
     elif not hasattr(command, 'status_code'):
 
+        #test: "search "phrase"
+        if 'search' in command:
+            reg_ex = re.search(r'(?<=\bsearch\s)(.*)', command)
+            print(reg_ex)
+            if reg_ex:
+                domain = reg_ex.group(1)
+                new = 2
+                tabUrl = "https://google.com/?#q="
+                term = domain
+                webbrowser.open(tabUrl+term, new = new, autoraise=True)
+                talkToMe("i opened your results in a new page! your welcome!")
+                # for url in search(domain, stop=1):
+                #     print(url)
+                #     webbrowser.open(url)
+                # googlesearch.search(domain, tld='com', lang='en', tbs='0', safe='off', num=10, start=0, stop=None, domains=0, pause=2.0, only_standard=False, extra_params={}, tpe='', user_agent=None)
+                # response = GoogleSearch().search(domain)
+                # for result in response.results:
+                #     print("Title: " + result.title)
+                #     print("Content: " + result.getText())
+                # url = 'https://www.google.com/' + domain
+                # webbrowser.open(url)
+                print('Done!')
+            else:
+                pass
+
+        # test: "current weather in los angeles"
         if WEATHER_REGEX_COMMAND.search(command.lower()):
             WEATHER_CITY_REGEX = re.compile(r'(?<=\bweather in\s)(.*)')
             city = "los angeles"
@@ -228,12 +264,13 @@ def voice(request):
                     weatherimage = w.get_weather_icon_url()
                     request.session["weatherimage"] = weatherimage
                     # print(request.session["weatherimage"])
-                    Phrase.objects.create(content=weatherimage)
+                    Phrase.objects.create(content = weatherimage)
+                    request.session["command"] = "current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees"
                     print(temp)
                     talkToMe("current weather in " + city + " is " + str(status) +
                              " with a temerature of " + str(temp["temp"]) + " degrees")
                 except:
-                    talkToMe("there is no weather in " + city + " today")
+                    talkToMe("I could not find your " + city)
 
         # test: "who is bob ross"
         if WHOIS_REGEX.match(command.lower()):
@@ -247,10 +284,51 @@ def voice(request):
                 except:
                     talkToMe("No information on " + name)
 
+        # test: "scores for seattle"
+        if CITY_SCORE_REGEX_COMMAND.search(command.lower()):
+            CITY_REGEX_SCORED = re.compile(r'(?<=\bscores for\s)(.*)')
+            scored_city = 'los-angeles'
+            if CITY_REGEX_SCORED.search(command.lower()):
+                regex_city_scored_result = CITY_REGEX_SCORED.search(command.lower())
+                scored_city = regex_city_scored_result.group(0)
+                scored_city_formatted = scored_city.replace(" ","-")
+                try:
+                    scored_city_formatted_url = "https://api.teleport.org/api/urban_areas/slug:" + scored_city_formatted + "/scores/"
+                    teleport_api_res = requests.get(scored_city_formatted_url)
+                    request.session['city_score_info_name'] = scored_city.title()
+                    request.session['city_score_info_score'] = int(teleport_api_res.json()['teleport_city_score'])
+                    request.session['city_score_info_summary'] = teleport_api_res.json()['summary']
+                    request.session['data_for_viz_radar'] = ""
+                    city_score_categories = teleport_api_res.json()['categories']
+                    scores_for_cities_arr = [0,0,0,0,0,0,0,0]
+                    for i in city_score_categories:
+                        if i['name'] == 'Housing':
+                            scores_for_cities_arr[0] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Cost of Living':
+                            scores_for_cities_arr[1] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Healthcare':
+                            scores_for_cities_arr[2] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Education':
+                            scores_for_cities_arr[3] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Environmental Quality':
+                            scores_for_cities_arr[4] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Economy':
+                            scores_for_cities_arr[5] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Outdoors':
+                            scores_for_cities_arr[6] = round(i['score_out_of_10'],2)
+                        elif i['name'] == 'Commute':
+                            scores_for_cities_arr[7] = round(i['score_out_of_10'],2)
+                    for x in scores_for_cities_arr:
+                        request.session['data_for_viz_radar'] += (str(x) + ",")
+                    request.session['data_for_viz_radar'] = request.session['data_for_viz_radar'][:-1]
+                    print(request.session['data_for_viz_radar'])
+                    request.session['command_for_city_scores_compare'] = "Quality of Life scores for " + scored_city
+                    talkToMe("Quality of Life scores for " + scored_city)
+                except:
+                    talkToMe("Either " + scored_city + " is not a city, or it has not been evaluated")
+
         # test: "cat pictures"
         if PIC_REGEX_COMMAND.search(command.lower()):
-            print("sam this thing right here!")
-            print(command.lower())
             PIC_REGEX = re.compile(r'\w+(?=\s+pictures*\b)')
             command_subject = "frog"
             all_pics = []
