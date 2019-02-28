@@ -26,7 +26,6 @@ import cv2
 
 
 
-
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
@@ -148,6 +147,12 @@ def voice(request):
 
     elif "hello" in command:
         talkToMe("hey")
+
+    elif "I love you" in command:
+        talkToMe("I love you too")
+
+    elif "dick pics" in command:
+        talkToMe("Oh look, it is richard nixon")
 
     elif "how are you" in command:
         talkToMe("i'm doing fine, thanks for asking")
