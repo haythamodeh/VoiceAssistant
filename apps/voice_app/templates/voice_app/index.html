@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
     <script src="{% static 'voice_app/js/scripts.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
+
+    
     <title>Voice App</title>
 </head>
 
@@ -54,6 +56,7 @@
                 <div class="main-content">
                     <p class="animated slideInDown" style="font-size: 40px;">{{last_phrase.content.upper}}</p>
                     <hr style="border-color: rgba(255, 255, 255, 0.39);">
+
 
                     {% if last_phrase.content == request.session.command_for_pics %}
                     <div class="container animated slideInDown">
@@ -184,7 +187,7 @@
                             <p style="padding: 0 32px;"><a href="{{article.url}}" target="_blank">{{article.url}}</a></p>
                         {% endfor %}
                     {% endif %}
-                    
+
                     {% if last_phrase.content == request.session.command %}
                         {% if "weatherimage" in request.session %}
                             <img class="weatherimage animated fadeInUp" src="{{request.session.weatherimage}}" alt="weatherimage">
