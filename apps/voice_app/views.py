@@ -208,6 +208,8 @@ def voice(request):
 
     elif 'stop' in command:
         request.session['style'] = "display:none;"
+        if 'url' in request.session:
+            del request.session['url']
 
     # test: "open website yahoo.com"
     elif 'open website' in command:
