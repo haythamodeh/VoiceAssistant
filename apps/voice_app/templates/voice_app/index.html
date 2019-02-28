@@ -47,16 +47,29 @@
                     <p>&nbsp;{{ item.item }}</p>
                     {% endfor %}
                 </div>
+
                 <form action="/clearActivityLog">
                     <input type="submit" value="Clear" class="clearbtn">
                 </form>
             </div>
+            <div id = "commands_wrapper" class = "animated bounceInRight">
+                    <h3>Sample skills:</h3>
+                    <div class = "commandLog">
+                        <p>&nbsp; weather</p>
+                        <p>&nbsp; plot</p>
+                        <p>&nbsp; music</p>
+                    </div>
+                </div>
+                
             <div class="main-content-wrapper">
-
                 <div class="main-content">
                     <p class="animated slideInDown" style="font-size: 40px;">{{last_phrase.content.upper}}</p>
                     <hr style="border-color: rgba(255, 255, 255, 0.39);">
 
+                    <iframe class="animated slideInDown" style ="{{request.session.style}}" width="760"
+                    height="515" src="{{request.session.url}}" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                </iframe>
 
                     {% if last_phrase.content == request.session.command_for_pics %}
                     <div class="container animated slideInDown">
@@ -129,89 +142,84 @@
 
                     {% if last_phrase.content == request.session.command_for_data %}
 
-                        <p>Air Quality Index (AQI) for major cities in this country</p>
+                    <p>Air Quality Index (AQI) for major cities in this country</p>
 
-                        <p style="display:none" id="data_for_viz">{{ request.session.chart_data_city_scores }} </p>
-                        <p style="display:none" id="label_for_viz">{{ request.session.chart_data_city_names }} </p>
+                    <p style="display:none" id="data_for_viz">{{ request.session.chart_data_city_scores }} </p>
+                    <p style="display:none" id="label_for_viz">{{ request.session.chart_data_city_names }} </p>
 
-                        <canvas 
-                            id="chartjs-1" 
-                            class="chartjs" 
-                            width="770" 
-                            height="325" 
-                            style="display: block; width: 770px; height: 385px;"
-                        ></canvas>
+                    <canvas id="chartjs-1" class="chartjs" width="770" height="325"
+                        style="display: block; width: 770px; height: 385px;"></canvas>
 
-                        <table class="table table-striped">
-                                <tbody>
-                                        <tr>
-                                            <th><strong>Air Quality Index<br>
-                                            (AQI) Values</strong></th>
-                                            <th><strong>Levels of Health Concern</strong></th>
-                                        </tr>
-                                        <tr>
-                                            <th><strong><em>When the AQI is in this range</em>:</strong></th>
-                                            <th><em>.<strong>.air quality conditions are:</strong></em></th>
-                                        </tr>
-                                        <tr >
-                                            <td>0 to 50 </td>
-                                            <td> Good</td>
-                                        </tr>
-                                        <tr >
-                                            <td>51 to 100 </td>
-                                            <td>Moderate</td>
-                                        </tr>
-                                        <tr >
-                                            <td>101 to 150 </td>
-                                            <td>Unhealthy for Sensitive Groups </td>
-                                        </tr>
-                                        <tr >
-                                            <td>151 to 200</td>
-                                            <td>Unhealthy </td>
-                                        </tr>
-                                        <tr >
-                                            <td>201 to 300</td>
-                                            <td> Very Unhealthy</td>
-                                        </tr>
-                                            <tr>
-                                            <td height="22">301 to 500</td>
-                                            <td>Hazardous</td>
-                                        </tr>
-                                        </tbody>
-                            </table>
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <th><strong>Air Quality Index<br>
+                                        (AQI) Values</strong></th>
+                                <th><strong>Levels of Health Concern</strong></th>
+                            </tr>
+                            <tr>
+                                <th><strong><em>When the AQI is in this range</em>:</strong></th>
+                                <th><em>.<strong>.air quality conditions are:</strong></em></th>
+                            </tr>
+                            <tr>
+                                <td>0 to 50 </td>
+                                <td> Good</td>
+                            </tr>
+                            <tr>
+                                <td>51 to 100 </td>
+                                <td>Moderate</td>
+                            </tr>
+                            <tr>
+                                <td>101 to 150 </td>
+                                <td>Unhealthy for Sensitive Groups </td>
+                            </tr>
+                            <tr>
+                                <td>151 to 200</td>
+                                <td>Unhealthy </td>
+                            </tr>
+                            <tr>
+                                <td>201 to 300</td>
+                                <td> Very Unhealthy</td>
+                            </tr>
+                            <tr>
+                                <td height="22">301 to 500</td>
+                                <td>Hazardous</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                            <h5>What is an AQI?</h5>
+                    <h5>What is an AQI?</h5>
 
-                            <p>
-                                The AQI is an index for reporting daily air quality. 
-                                It tells you how clean or polluted your air is, and what 
-                                associated health effects might be a concern for you. The AQI 
-                                focuses on health effects you may experience within a few hours or 
-                                days after breathing polluted air. EPA calculates the AQI for five 
-                                major air pollutants regulated by the Clean Air Act: ground-level ozone, 
-                                particle pollution (also known as particulate matter), carbon monoxide, 
-                                sulfur dioxide, and nitrogen dioxide. For each of these pollutants, EPA has 
-                                established national air quality standards to protect public health .Ground-level 
-                                ozone and airborne particles are the two pollutants
-                            </p>
+                    <p>
+                        The AQI is an index for reporting daily air quality.
+                        It tells you how clean or polluted your air is, and what
+                        associated health effects might be a concern for you. The AQI
+                        focuses on health effects you may experience within a few hours or
+                        days after breathing polluted air. EPA calculates the AQI for five
+                        major air pollutants regulated by the Clean Air Act: ground-level ozone,
+                        particle pollution (also known as particulate matter), carbon monoxide,
+                        sulfur dioxide, and nitrogen dioxide. For each of these pollutants, EPA has
+                        established national air quality standards to protect public health .Ground-level
+                        ozone and airborne particles are the two pollutants
+                    </p>
 
-                            <h5>How Does the AQI Work?</h5>
+                    <h5>How Does the AQI Work?</h5>
 
-                            <p>
-                                    Think of the AQI as a yardstick that runs from 0 to 500. The higher the 
-                                    AQI value, the greater the level of air pollution and the greater the health 
-                                    concern. For example, an AQI value of 50 represents good air quality with little 
-                                    potential to affect public health, while an AQI value over 300 represents hazardous 
-                                    air quality.
+                    <p>
+                        Think of the AQI as a yardstick that runs from 0 to 500. The higher the
+                        AQI value, the greater the level of air pollution and the greater the health
+                        concern. For example, an AQI value of 50 represents good air quality with little
+                        potential to affect public health, while an AQI value over 300 represents hazardous
+                        air quality.
 
-                                    An AQI value of 100 generally corresponds to the national air quality standard for 
-                                    the pollutant, which is the level EPA has set to protect public health. AQI values 
-                                    below 100 are generally thought of as satisfactory. When AQI values are above 100, 
-                                    air quality is considered to be unhealthy-at first for certain sensitive groups of 
-                                    people, then for everyone as AQI values get higher.
-                            </p>
+                        An AQI value of 100 generally corresponds to the national air quality standard for
+                        the pollutant, which is the level EPA has set to protect public health. AQI values
+                        below 100 are generally thought of as satisfactory. When AQI values are above 100,
+                        air quality is considered to be unhealthy-at first for certain sensitive groups of
+                        people, then for everyone as AQI values get higher.
+                    </p>
 
-                            <a style="color:white;" href="https://airnow.gov/index.cfm?action=aqibasics.aqi">learn more...</a>
+                    <a style="color:white;" href="https://airnow.gov/index.cfm?action=aqibasics.aqi">learn more...</a>
 
                     {% endif %}
 
@@ -230,6 +238,7 @@
                         {% endif %}
                     {% endif %}
                 </div>
+
                 <div class="button text-center">
                     <form action="/voice">
                         <!-- <input id = "myBtn" type="submit" value="Press To Talk" class="btn btn-primary fa fa-microphone" onkeypress="submitOnEnter(this, event);" /> -->
@@ -241,23 +250,12 @@
 
         </div>
     </div>
-</body>
+    <div class="footer">
+        <center>
+                <span class ="skills">skills</span> <span> | about</span>
+        </center>
+    </div>
 
-<script type="text/javascript">
-    // function submitOnEnter(inputElement, event) {
-    //     if (event.keyCode == 13) { // No need to do browser specific checks. It is always 13.
-    //     print("YO!")
-    //         inputElement.form.submit();
-    //     }
-    // }
-    $(document).ready(function (e) {
-        console.log("hello");
-        $('body').keyup(function (e) {
-            if (e.keyCode == 32) {
-                $("#micbtn").click();
-            }
-        });
-    });
-</script>
+</body>
 
 </html>

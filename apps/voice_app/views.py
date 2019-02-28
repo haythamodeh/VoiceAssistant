@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 import wikipedia
 from newsapi import NewsApiClient
 import numpy as np
+import youtube_dl
 # from googlesearch.googlesearch import GoogleSearch
 from googlesearch import search
 import webbrowser
@@ -25,16 +26,24 @@ import webbrowser
 
 
 
+
+Instance = vlc.Instance()
+player = Instance.media_player_new()
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
+
 
 def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
     tts.save("audio.mp3")
     os.system("mpg123 audio.mp3")
     Phrase.objects.create(content=phrase)
+
+def playMusic():
+    os.system("mpg123 Metallica.mp3")
+
 
 def postImage(phrase):
     Phrase.objects.create(content=phrase)
@@ -221,19 +230,38 @@ def voice(request):
         for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
             video = 'https://www.youtube.com' + vid['href']
             break
-
         url = video
         video = pafy.new(url)
         best = video.getbest()
         playurl = best.url
-        Instance = vlc.Instance()
-        player = Instance.media_player_new()
-        Media = Instance.media_new(playurl)
-        Media.get_mrl()
-        player.set_media(Media)
-        player.play()
+        request.session['url'] = playurl
+        request.session['width'] = "0"
+        request.session['height'] = "0"
 
-    #test: "open website yahoo.com"
+    elif 'clip' in command:
+        talkToMe('What song?')
+        song = myCommand(request)
+
+        textToSearch = song
+        query = urllib.parse.quote(textToSearch)
+        url = "https://www.youtube.com/results?search_query=" + query
+        response = urllib.request.urlopen(url)
+        html = response.read()
+        soup = BeautifulSoup(html, 'html.parser')
+        for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
+            video = 'https://www.youtube.com' + vid['href']
+            break
+        url = video
+        video = pafy.new(url)
+        best = video.getbest()
+        playurl = best.url
+        request.session['url'] = playurl
+        request.session['style'] = "display:inline;"
+
+    elif 'stop' in command:
+        request.session['style'] = "display:none;"
+
+    # test: "open website yahoo.com"
     elif 'open website' in command:
         reg_ex = re.search('open website (.+)', command)
         if reg_ex:
@@ -246,15 +274,13 @@ def voice(request):
 
     elif not hasattr(command, 'status_code'):
 
-         #test: "search "phrase"
-        
-
         # test: "current weather in los angeles"
         if WEATHER_REGEX_COMMAND.search(command.lower()):
             WEATHER_CITY_REGEX = re.compile(r'(?<=\bweather in\s)(.*)')
             city = "los angeles"
             if WEATHER_CITY_REGEX.search(command.lower()):
-                weather_regex_result = WEATHER_CITY_REGEX.search(command.lower())
+                weather_regex_result = WEATHER_CITY_REGEX.search(
+                    command.lower())
                 city = weather_regex_result.group(0)
                 try:
                     obs = owm.weather_at_place(city)
@@ -268,7 +294,8 @@ def voice(request):
                     Phrase.objects.create(content = weatherimage)
                     request.session["command"] = "current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees"
                     print(temp)
-                    talkToMe("current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
+                    talkToMe("current weather in " + city + " is " + str(status) +
+                             " with a temerature of " + str(temp["temp"]) + " degrees")
                 except:
                     talkToMe("I could not find your " + city)
 
@@ -341,9 +368,11 @@ def voice(request):
                 # print("Sam, this is the command for a reall OG")
                 # print(command_subject)
                 try:
-                    request.session['command_for_pics'] = "showing " + command_subject + " pictures"
+                    request.session['command_for_pics'] = "showing " + \
+                        command_subject + " pictures"
                     talkToMe("showing " + command_subject + " pictures")
-                    flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + command_subject + "&tag_mode=any&format=json&nojsoncallback=1"
+                    flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + \
+                        command_subject + "&tag_mode=any&format=json&nojsoncallback=1"
                     flickr_res = requests.get(flickrApiUrl)
                     for i in flickr_res.json()['photos']['photo']:
                         all_pics.append(i['id'])
@@ -354,7 +383,8 @@ def voice(request):
                         images = img_res.json()['sizes']['size']
                         for j in images:
                             if j['label'] == 'Medium':
-                                formated_pics.append('<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
+                                formated_pics.append(
+                                    '<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
                     request.session['main_content'] = formated_pics
                 except:
                     talkToMe("No images for " + command_subject)
@@ -378,7 +408,8 @@ def voice(request):
                     airvis_soup = BeautifulSoup(airvis_html, 'html.parser')
                     # print(airvis_soup)
                     # print("before findall")
-                    result = airvis_soup.find(attrs={'class': 'ranking-list-items'})
+                    result = airvis_soup.find(
+                        attrs={'class': 'ranking-list-items'})
                     new_result = result.findAll(text=True)
                     print(new_result)
                     city_names = ""
@@ -406,7 +437,8 @@ def voice(request):
                     talkToMe("plotting " + data)
                     request.session['command_for_data'] = "plotting " + data
                 except:
-                    talkToMe(data + ", Either this is not a country, or there are no stations there")
+                    talkToMe(
+                        data + ", Either this is not a country, or there are no stations there")
 
     else:
         talkToMe("I don't understand what you are saying")
@@ -425,4 +457,4 @@ def voice(request):
     #         print(regex_color_result)
     #         color = regex_color_result.group(0)
     #         print(color)
-    #     request.session["color"] = color   
+    #     request.session["color"] = color

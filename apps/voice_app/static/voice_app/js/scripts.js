@@ -19,6 +19,10 @@ $(document).ready(function () {
         
     });
 
+    $(".skills").click(function(){
+        $("#commands_wrapper").css("display" , "inline");
+    });
+
 });
 
 $(document).ready(function () {
