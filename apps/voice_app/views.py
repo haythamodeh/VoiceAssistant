@@ -21,8 +21,7 @@ import numpy as np
 # from googlesearch.googlesearch import GoogleSearch
 from googlesearch import search
 import webbrowser
-import cv2
-
+# import cv2
 
 
 
@@ -103,7 +102,31 @@ def voice(request):
     # print(dir(command))
     # print(type(command))
 
-    if "top news" in command:
+    if 'search' in command:
+            reg_ex = re.search(r'(?<=\bsearch\s)(.*)', command)
+            print(reg_ex)
+            if reg_ex:
+                domain = reg_ex.group(1)
+                new = 2
+                tabUrl = "https://google.com/?#q="
+                term = domain
+                webbrowser.open(tabUrl+term, new = new, autoraise=True)
+                talkToMe("i opened your results in a new page! your welcome!")
+                # for url in search(domain, stop=1):
+                #     print(url)
+                #     webbrowser.open(url)
+                # googlesearch.search(domain, tld='com', lang='en', tbs='0', safe='off', num=10, start=0, stop=None, domains=0, pause=2.0, only_standard=False, extra_params={}, tpe='', user_agent=None)
+                # response = GoogleSearch().search(domain)
+                # for result in response.results:
+                #     print("Title: " + result.title)
+                #     print("Content: " + result.getText())
+                # url = 'https://www.google.com/' + domain
+                # webbrowser.open(url)
+                print('Done!')
+            else:
+                pass
+
+    elif "top news" in command:
         print("in news command")
         api.get_top_headlines(sources='bbc-news')
         request.session["bitcoin"] = api.get_everything(q='bitcoin')
@@ -112,33 +135,33 @@ def voice(request):
         #  = all_news
         talkToMe("here are your top news for today")
 
-    elif "take a picture" in command:
-        cam = cv2.VideoCapture(0)
+    # elif "take a picture" in command:
+    #     cam = cv2.VideoCapture(0)
 
-        cv2.namedWindow("test")
+    #     cv2.namedWindow("test")
 
-        img_counter = 0
+    #     img_counter = 0
 
-        while True:
-            ret, frame = cam.read()
-            cv2.imshow("test", frame)
-            if not ret:
-                break
-            k = cv2.waitKey(1)
+    #     while True:
+    #         ret, frame = cam.read()
+    #         cv2.imshow("test", frame)
+    #         if not ret:
+    #             break
+    #         k = cv2.waitKey(1)
 
-            if k%256 == 27:
-                # ESC pressed
-                print("Escape hit, closing...")
-                break
-            elif k%256 == 32:
-                # SPACE pressed
-                img_name = "opencv_frame_{}.png".format(img_counter)
-                cv2.imwrite(img_name, frame)
-                print("{} written!".format(img_name))
-                img_counter += 1
+    #         if k%256 == 27:
+    #             # ESC pressed
+    #             print("Escape hit, closing...")
+    #             break
+    #         elif k%256 == 32:
+    #             # SPACE pressed
+    #             img_name = "opencv_frame_{}.png".format(img_counter)
+    #             cv2.imwrite(img_name, frame)
+    #             print("{} written!".format(img_name))
+    #             img_counter += 1
 
-        cam.release()
-        cv2.destroyAllWindows()
+    #     cam.release()
+    #     cv2.destroyAllWindows()
 
     elif "tell me a joke" in command:
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
@@ -224,29 +247,7 @@ def voice(request):
     elif not hasattr(command, 'status_code'):
 
          #test: "search "phrase"
-        if 'search' in command:
-            reg_ex = re.search(r'(?<=\bsearch\s)(.*)', command)
-            print(reg_ex)
-            if reg_ex:
-                domain = reg_ex.group(1)
-                new = 2
-                tabUrl = "https://google.com/?#q="
-                term = domain
-                webbrowser.open(tabUrl+term, new = new, autoraise=True)
-                talkToMe("i opened your results in a new page! your welcome!")
-                # for url in search(domain, stop=1):
-                #     print(url)
-                #     webbrowser.open(url)
-                # googlesearch.search(domain, tld='com', lang='en', tbs='0', safe='off', num=10, start=0, stop=None, domains=0, pause=2.0, only_standard=False, extra_params={}, tpe='', user_agent=None)
-                # response = GoogleSearch().search(domain)
-                # for result in response.results:
-                #     print("Title: " + result.title)
-                #     print("Content: " + result.getText())
-                # url = 'https://www.google.com/' + domain
-                # webbrowser.open(url)
-                print('Done!')
-            else:
-                pass
+        
 
         # test: "current weather in los angeles"
         if WEATHER_REGEX_COMMAND.search(command.lower()):
