@@ -358,3 +358,17 @@ hr {
     width: 150px;
     height: 150px;
 }
+.footer{
+    margin-top:20%;
+}
+#commands_wrapper{
+    float:right;
+    display: none;
+}
+.commandLog {
+    height: 400px;
+    overflow: scroll;
+    width: 250px;
+    font-size: 20px;
+    overflow-x: hidden;
+}
