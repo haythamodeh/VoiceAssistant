@@ -18,6 +18,9 @@ from bs4 import BeautifulSoup
 import wikipedia
 from newsapi import NewsApiClient
 import numpy as np
+# from googlesearch.googlesearch import GoogleSearch
+from googlesearch import search
+
 
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
@@ -182,6 +185,25 @@ def voice(request):
 
     elif not hasattr(command, 'status_code'):
 
+         #test: "search "phrase"
+        if 'search' in command:
+            reg_ex = re.search(r'(?<=\bsearch\s)(.*)', command)
+            print(reg_ex)
+            if reg_ex:
+                domain = reg_ex.group(1)
+                for url in search(domain, stop=5):
+                    print(url)
+                    webbrowser.open(url)
+                # response = GoogleSearch().search(domain)
+                # for result in response.results:
+                #     print("Title: " + result.title)
+                #     print("Content: " + result.getText())
+                # url = 'https://www.google.com/' + domain
+                # webbrowser.open(url)
+                print('Done!')
+            else:
+                pass
+
         # test: "current weather in los angeles"
         if WEATHER_REGEX_COMMAND.search(command.lower()):
             WEATHER_CITY_REGEX = re.compile(r'(?<=\bweather in\s)(.*)')
@@ -199,10 +221,11 @@ def voice(request):
                     request.session["weatherimage"] = weatherimage
                     # print(request.session["weatherimage"])
                     Phrase.objects.create(content = weatherimage)
+                    request.session["command"] = "current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees"
                     print(temp)
                     talkToMe("current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
                 except:
-                    talkToMe("there is no weather in " + city + " today")
+                    talkToMe("I could not find your " + city)
 
         # test: "who is bob ross"
         if WHOIS_REGEX.match(command.lower()):

@@ -177,17 +177,18 @@
                     {% endif %}
 
                     {% if last_phrase.content == request.session.last_news_command %}
-                    {% for article in request.session.bitcoin.articles %}
-                    <p style="color: green; font-size: 28px;
-                        ">{{article.title}}</p>
-                    <p style="padding: 0 32px;">{{article.content}}</p>
-                    <p style="padding: 0 32px;"><a href="{{article.url}}" target="_blank">{{article.url}}</a></p>
-
-                    {% endfor %}
+                        {% for article in request.session.bitcoin.articles %}
+                            <p style="color: green; font-size: 28px;
+                                ">{{article.title}}</p>
+                            <p style="padding: 0 32px;">{{article.content}}</p>
+                            <p style="padding: 0 32px;"><a href="{{article.url}}" target="_blank">{{article.url}}</a></p>
+                        {% endfor %}
                     {% endif %}
-
-                    {% if "weatherimage" in request.session %}
-                        <img class="weatherimage animated fadeInUp" src="{{request.session.weatherimage}}" alt="weatherimage">
+                    
+                    {% if last_phrase.content == request.session.command %}
+                        {% if "weatherimage" in request.session %}
+                            <img class="weatherimage animated fadeInUp" src="{{request.session.weatherimage}}" alt="weatherimage">
+                        {% endif %}
                     {% endif %}
                 </div>
                 <div class="button text-center">
