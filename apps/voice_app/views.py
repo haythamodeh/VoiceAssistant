@@ -18,6 +18,9 @@ from bs4 import BeautifulSoup
 import wikipedia
 from newsapi import NewsApiClient
 import numpy as np
+# from googlesearch.googlesearch import GoogleSearch
+from googlesearch import search
+
 
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
@@ -85,6 +88,7 @@ def myCommand(request):
 def voice(request):
     talkToMe("How can I help you?")
     command = myCommand(request)
+    print(command)
 
     if "top news" in command:
         print("in news command")
@@ -120,28 +124,7 @@ def voice(request):
     #         print(color)
     #     request.session["color"] = color   
 
-    # test: "current weather in los angeles"
-    WEATHER_REGEX_COMMAND = re.compile(r'(current weather)')
-    if type(command) is str:
-        if WEATHER_REGEX_COMMAND.search(command.lower()):
-            WEATHER_CITY_REGEX = re.compile(r'(?<=\bweather in\s)(.*)')
-            city = "los angeles"
-            if WEATHER_CITY_REGEX.search(command.lower()):
-                weather_regex_result = WEATHER_CITY_REGEX.search(command.lower())
-                city = weather_regex_result.group(0)
-
-                obs = owm.weather_at_place(city)
-                # obs = owm.weather_at_id(2643741)
-                w = obs.get_weather()
-                temp = w.get_temperature('fahrenheit')
-                status = w.get_status()
-                weatherimage = w.get_weather_icon_url()
-                request.session["weatherimage"] = weatherimage
-                # print(request.session["weatherimage"])
-                Phrase.objects.create(content = weatherimage)
-                print(temp)
-                talkToMe("current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees")
-
+    
     # # test: "plot for italy"
     DATAVIZ_REGEX_COMAND = re.compile(r'(plot)')
     if type(command) is str:
@@ -224,6 +207,8 @@ def voice(request):
                         if j['label'] == 'Medium':
                             formated_pics.append('<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
                 request.session['main_content'] = formated_pics
+
+
 
     #test: "open website yahoo.com"
     elif 'open website' in command:

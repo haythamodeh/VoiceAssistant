@@ -89,9 +89,10 @@
 
                     {% endfor %}
                     {% endif %}
-
-                    {% if "weatherimage" in request.session %}
-                        <img class="weatherimage animated fadeInUp" src="{{request.session.weatherimage}}" alt="weatherimage">
+                    {% if last_phrase.content == request.session.command %}
+                        {% if "weatherimage" in request.session %}
+                            <img class="weatherimage animated fadeInUp" src="{{request.session.weatherimage}}" alt="weatherimage">
+                        {% endif %}
                     {% endif %}
                 </div>
                 <div class="button text-center">
