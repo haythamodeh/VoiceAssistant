@@ -12,7 +12,6 @@ from .models import ItemList, Phrase
 import requests
 import smtplib
 import pafy
-import vlc
 import urllib.request
 from bs4 import BeautifulSoup
 import wikipedia
@@ -22,13 +21,11 @@ import youtube_dl
 # from googlesearch.googlesearch import GoogleSearch
 from googlesearch import search
 import webbrowser
-# import cv2
+import cv2
 
 
 
 
-Instance = vlc.Instance()
-player = Instance.media_player_new()
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
@@ -144,33 +141,33 @@ def voice(request):
         #  = all_news
         talkToMe("here are your top news for today")
 
-    # elif "take a picture" in command:
-    #     cam = cv2.VideoCapture(0)
+    elif "take a picture" in command:
+            cam = cv2.VideoCapture(0)
 
-    #     cv2.namedWindow("test")
+            cv2.namedWindow("test")
 
-    #     img_counter = 0
+            img_counter = 0
 
-    #     while True:
-    #         ret, frame = cam.read()
-    #         cv2.imshow("test", frame)
-    #         if not ret:
-    #             break
-    #         k = cv2.waitKey(1)
+            while True:
+                ret, frame = cam.read()
+                cv2.imshow("test", frame)
+                if not ret:
+                    break
+                k = cv2.waitKey(1)
 
-    #         if k%256 == 27:
-    #             # ESC pressed
-    #             print("Escape hit, closing...")
-    #             break
-    #         elif k%256 == 32:
-    #             # SPACE pressed
-    #             img_name = "opencv_frame_{}.png".format(img_counter)
-    #             cv2.imwrite(img_name, frame)
-    #             print("{} written!".format(img_name))
-    #             img_counter += 1
+                if k%256 == 27:
+                    # ESC pressed
+                    print("Escape hit, closing...")
+                    break
+                elif k%256 == 32:
+                    # SPACE pressed
+                    img_name = "opencv_frame_{}.png".format(img_counter)
+                    cv2.imwrite(img_name, frame)
+                    print("{} written!".format(img_name))
+                    img_counter += 1
 
-    #     cam.release()
-    #     cv2.destroyAllWindows()
+            cam.release()
+            cv2.destroyAllWindows()
 
     elif "tell me a joke" in command:
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
@@ -260,6 +257,8 @@ def voice(request):
 
     elif 'stop' in command:
         request.session['style'] = "display:none;"
+        if 'url' in request.session:
+            del request.session['url']
 
     # test: "open website yahoo.com"
     elif 'open website' in command:
