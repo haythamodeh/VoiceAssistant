@@ -23,12 +23,7 @@ from googlesearch import search
 import webbrowser
 import cv2
 
-<<<<<<< HEAD
 
-
-
-=======
->>>>>>> f399000efd6d6ac4b66f96cd4470130afa0c282a
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
