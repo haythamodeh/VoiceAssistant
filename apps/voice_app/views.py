@@ -21,6 +21,7 @@ import youtube_dl
 # from googlesearch.googlesearch import GoogleSearch
 from googlesearch import search
 import webbrowser
+import cv2
 
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
@@ -98,12 +99,38 @@ def voice(request):
     DATAVIZ_REGEX_COMAND = re.compile(r'(pollution for)')
     PIC_REGEX_COMMAND = re.compile(r'(\s+pictures*\b)')
     WHOIS_REGEX = re.compile(r'(who is)')
+    PLAY_SONG_REGEX = re.compile(r'(play song)')
+    PLAY_CLIP_REGEX = re.compile(r'(play clip)')
 
     # print(command)
     # print(dir(command))
     # print(type(command))
 
-    if "top news" in command:
+    if 'search' in command:
+            reg_ex = re.search(r'(?<=\bsearch\s)(.*)', command)
+            print(reg_ex)
+            if reg_ex:
+                domain = reg_ex.group(1)
+                new = 2
+                tabUrl = "https://google.com/?#q="
+                term = domain
+                webbrowser.open(tabUrl+term, new = new, autoraise=True)
+                talkToMe("i opened your results in a new page! your welcome!")
+                # for url in search(domain, stop=1):
+                #     print(url)
+                #     webbrowser.open(url)
+                # googlesearch.search(domain, tld='com', lang='en', tbs='0', safe='off', num=10, start=0, stop=None, domains=0, pause=2.0, only_standard=False, extra_params={}, tpe='', user_agent=None)
+                # response = GoogleSearch().search(domain)
+                # for result in response.results:
+                #     print("Title: " + result.title)
+                #     print("Content: " + result.getText())
+                # url = 'https://www.google.com/' + domain
+                # webbrowser.open(url)
+                print('Done!')
+            else:
+                pass
+
+    elif "top news" in command:
         print("in news command")
         api.get_top_headlines(sources='bbc-news')
         request.session["bitcoin"] = api.get_everything(q='bitcoin')
@@ -111,6 +138,34 @@ def voice(request):
         request.session["last_news_command"] = "here are your top news for today"
         #  = all_news
         talkToMe("here are your top news for today")
+
+    elif "take a picture" in command:
+            cam = cv2.VideoCapture(0)
+
+            cv2.namedWindow("test")
+
+            img_counter = 0
+
+            while True:
+                ret, frame = cam.read()
+                cv2.imshow("test", frame)
+                if not ret:
+                    break
+                k = cv2.waitKey(1)
+
+                if k%256 == 27:
+                    # ESC pressed
+                    print("Escape hit, closing...")
+                    break
+                elif k%256 == 32:
+                    # SPACE pressed
+                    img_name = "opencv_frame_{}.png".format(img_counter)
+                    cv2.imwrite(img_name, frame)
+                    print("{} written!".format(img_name))
+                    img_counter += 1
+
+            cam.release()
+            cv2.destroyAllWindows()
 
     elif "tell me a joke" in command:
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
@@ -157,46 +212,6 @@ def voice(request):
 
             talkToMe('Email sent.')
 
-    elif 'music' in command:
-        talkToMe('What song?')
-        song = myCommand(request)
-
-        textToSearch = song
-        query = urllib.parse.quote(textToSearch)
-        url = "https://www.youtube.com/results?search_query=" + query
-        response = urllib.request.urlopen(url)
-        html = response.read()
-        soup = BeautifulSoup(html, 'html.parser')
-        for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
-            video = 'https://www.youtube.com' + vid['href']
-            break
-        url = video
-        video = pafy.new(url)
-        best = video.getbest()
-        playurl = best.url
-        request.session['url'] = playurl
-        request.session['style'] = "display:none;"
-
-    elif 'clip' in command:
-        talkToMe('What song?')
-        song = myCommand(request)
-
-        textToSearch = song
-        query = urllib.parse.quote(textToSearch)
-        url = "https://www.youtube.com/results?search_query=" + query
-        response = urllib.request.urlopen(url)
-        html = response.read()
-        soup = BeautifulSoup(html, 'html.parser')
-        for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
-            video = 'https://www.youtube.com' + vid['href']
-            break
-        url = video
-        video = pafy.new(url)
-        best = video.getbest()
-        playurl = best.url
-        request.session['url'] = playurl
-        request.session['style'] = "display:inline;"
-
     elif 'stop' in command:
         request.session['style'] = "display:none;"
         if 'url' in request.session:
@@ -215,38 +230,56 @@ def voice(request):
 
     elif not hasattr(command, 'status_code'):
 
-        # test: "search "phrase"
-        if 'search' in command:
-            reg_ex = re.search(r'(?<=\bsearch\s)(.*)', command)
-            print(reg_ex)
-            if reg_ex:
-                domain = reg_ex.group(1)
-                new = 2
-                tabUrl = "https://google.com/?#q="
-                term = domain
-                webbrowser.open(tabUrl+term, new=new, autoraise=True)
-                talkToMe("i opened your results in a new page! your welcome!")
-                # for url in search(domain, stop=1):
-                #     print(url)
-                #     webbrowser.open(url)
-                # googlesearch.search(domain, tld='com', lang='en', tbs='0', safe='off', num=10, start=0, stop=None, domains=0, pause=2.0, only_standard=False, extra_params={}, tpe='', user_agent=None)
-                # response = GoogleSearch().search(domain)
-                # for result in response.results:
-                #     print("Title: " + result.title)
-                #     print("Content: " + result.getText())
-                # url = 'https://www.google.com/' + domain
-                # webbrowser.open(url)
-                print('Done!')
-            else:
-                pass
+        if PLAY_CLIP_REGEX.search(command.lower()):
+            CLIP_REGEX = re.compile(r'(?<=\bclip\s)(.*)')            
+            song = "thrift shop"
+            if CLIP_REGEX.search(command.lower()):
+                clip_regex_result = CLIP_REGEX.search(command.lower())
+                song = clip_regex_result.group(0)
+            textToSearch = song
+            query = urllib.parse.quote(textToSearch)
+            url = "https://www.youtube.com/results?search_query=" + query
+            response = urllib.request.urlopen(url)
+            html = response.read()
+            soup = BeautifulSoup(html, 'html.parser')
+            for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
+                video = 'https://www.youtube.com' + vid['href']
+                break
+            url = video
+            video = pafy.new(url)
+            best = video.getbest()
+            playurl = best.url
+            request.session['url'] = playurl
+            request.session['style'] = "display:inline;"
+
+        if PLAY_SONG_REGEX.search(command.lower()):
+            SONG_REGEX = re.compile(r'(?<=\bsong\s)(.*)')            
+            song = "thrift shop"
+            if SONG_REGEX.search(command.lower()):
+                song_regex_result = SONG_REGEX.search(command.lower())
+                song = song_regex_result.group(0)
+            textToSearch = song
+            query = urllib.parse.quote(textToSearch)
+            url = "https://www.youtube.com/results?search_query=" + query
+            response = urllib.request.urlopen(url)
+            html = response.read()
+            soup = BeautifulSoup(html, 'html.parser')
+            for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
+                video = 'https://www.youtube.com' + vid['href']
+                break
+            url = video
+            video = pafy.new(url)
+            best = video.getbest()
+            playurl = best.url
+            request.session['url'] = playurl
+            request.session['style'] = "display:none;"
 
         # test: "current weather in los angeles"
         if WEATHER_REGEX_COMMAND.search(command.lower()):
             WEATHER_CITY_REGEX = re.compile(r'(?<=\bweather in\s)(.*)')
             city = "los angeles"
             if WEATHER_CITY_REGEX.search(command.lower()):
-                weather_regex_result = WEATHER_CITY_REGEX.search(
-                    command.lower())
+                weather_regex_result = WEATHER_CITY_REGEX.search(command.lower())
                 city = weather_regex_result.group(0)
                 try:
                     obs = owm.weather_at_place(city)
@@ -262,7 +295,7 @@ def voice(request):
                         status) + " with a temerature of " + str(temp["temp"]) + " degrees"
                     print(temp)
                     talkToMe("current weather in " + city + " is " + str(status) +
-                             " with a temerature of " + str(temp["temp"]) + " degrees")
+                            " with a temerature of " + str(temp["temp"]) + " degrees")
                 except:
                     talkToMe("I could not find your " + city)
 
