@@ -21,9 +21,19 @@
 </head>
 
 <body style="background-color: {{ request.session.color }} !important;">
+
     <div id="loading-wrapper" style="display: none;">
         <div class="animated infinite pulse" id="loading-text">LISTENING</div>
         <div id="loading-content"></div>
+    </div>
+    <div class ="animated fadeIn" id="about_wrapper" style="display: inline-block;">
+        <center>
+        <h2>Creators</h2> <a class = "close">x</a>
+        <p>Sam Guerreo | <a href = "https://github.com/samkguerrero">GitHub</a> | samkguerreo@gmail.com</p>
+        <p>Vlad Dziun | <a href = "https://github.com/mrwader">GitHub</a> | v.dziun@gmail.com</p>
+        <p>Haytham Odeh | <a href = "https://github.com/haythamodeh">GitHub</a> | hodelion@gmail.com</p>
+    </center>
+   
     </div>
     <div id="blur">
         <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
@@ -53,11 +63,14 @@
                 </form>
             </div>
             <div id = "commands_wrapper" class = "animated bounceInRight">
-                    <h3>Sample skills:</h3>
+                    <h3>Say:</h3>
                     <div class = "commandLog">
-                        <p>&nbsp; weather</p>
-                        <p>&nbsp; plot</p>
-                        <p>&nbsp; music</p>
+                        <p>&nbsp; "music"</p>
+                        <p>&nbsp; "open website"</p>
+                        <p>&nbsp; "hey"</p>
+                        <p>&nbsp; "top news"</p>
+                        <p>&nbsp; "I love you"</p>
+                        <p>&nbsp; "top news"</p>
                     </div>
                 </div>
                 
@@ -246,13 +259,13 @@
                                 class="fa fa-microphone animated infinite pulse slow"></i></button>
                     </form>
                 </div>
-                <div class="footer">
-                        <center>
-                                <span class ="skills">skills</span> <span> | about</span>
-                        </center>
-                    </div>
+ 
             </div>
-
+            <div class="footer">
+                    <center>
+                            <span class ="skills">skills</span> <span class ="about"> | about</span>
+                    </center>
+                </div>
         </div>
     </div>
 </body>

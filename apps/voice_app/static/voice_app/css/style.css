@@ -377,3 +377,21 @@ hr {
 iframe body{
     height:0px;
 }
+#about_wrapper{
+    background-color: #80808075;
+    width: 520px;
+    height: 200px;
+    border-radius: 15px;
+    padding: 15px;
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
+    display: none;
+}
+#about_wrapper p{
+font-size: 20px;
+}
+#about_wrapper h2{
+    display:inline-block;
+    }
