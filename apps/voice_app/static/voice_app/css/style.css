@@ -359,7 +359,9 @@ hr {
     height: 150px;
 }
 .footer{
-    margin-top:20%;
+    margin-top:80vh;
+    position: sticky;
+    bottom: 0;
 }
 #commands_wrapper{
     float:right;

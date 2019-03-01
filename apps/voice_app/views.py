@@ -23,9 +23,12 @@ from googlesearch import search
 import webbrowser
 import cv2
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> f399000efd6d6ac4b66f96cd4470130afa0c282a
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
@@ -38,9 +41,6 @@ def talkToMe(phrase):
     os.system("mpg123 audio.mp3")
     Phrase.objects.create(content=phrase)
 
-def playMusic():
-    os.system("mpg123 Metallica.mp3")
-
 
 def postImage(phrase):
     Phrase.objects.create(content=phrase)
@@ -49,6 +49,8 @@ def postImage(phrase):
 def index(request):
     if not "color" in request.session:
         request.session["color"] = "white"
+    if 'style' not in request.session:
+        request.session['style'] = "display:none;"
 
     itemlist = ItemList.objects.all().order_by("-id")
     phrases = Phrase.objects.last()
@@ -67,7 +69,7 @@ def clearActivityLog(request):
     if "weatherimage" in request.session:
         del request.session["weatherimage"]
     request.session.flush()
-    Phrase.objects.create(content = "How can I help you?")
+    Phrase.objects.create(content="How can I help you?")
     all_items = ItemList.objects.all()
     all_items.delete()
     talkToMe("How Can I help you?")
@@ -232,8 +234,7 @@ def voice(request):
         best = video.getbest()
         playurl = best.url
         request.session['url'] = playurl
-        request.session['width'] = "0"
-        request.session['height'] = "0"
+        request.session['style'] = "display:none;"
 
     elif 'clip' in command:
         talkToMe('What song?')
@@ -290,8 +291,9 @@ def voice(request):
                     weatherimage = w.get_weather_icon_url()
                     request.session["weatherimage"] = weatherimage
                     # print(request.session["weatherimage"])
-                    Phrase.objects.create(content = weatherimage)
-                    request.session["command"] = "current weather in " + city + " is " + str(status) + " with a temerature of " + str(temp["temp"]) + " degrees"
+                    Phrase.objects.create(content=weatherimage)
+                    request.session["command"] = "current weather in " + city + " is " + str(
+                        status) + " with a temerature of " + str(temp["temp"]) + " degrees"
                     print(temp)
                     talkToMe("current weather in " + city + " is " + str(status) +
                              " with a temerature of " + str(temp["temp"]) + " degrees")
@@ -315,35 +317,48 @@ def voice(request):
             CITY_REGEX_SCORED = re.compile(r'(?<=\bscores for\s)(.*)')
             scored_city = 'los-angeles'
             if CITY_REGEX_SCORED.search(command.lower()):
-                regex_city_scored_result = CITY_REGEX_SCORED.search(command.lower())
+                regex_city_scored_result = CITY_REGEX_SCORED.search(
+                    command.lower())
                 scored_city = regex_city_scored_result.group(0)
-                scored_city_formatted = scored_city.replace(" ","-")
+                scored_city_formatted = scored_city.replace(" ", "-")
                 try:
-                    scored_city_formatted_url = "https://api.teleport.org/api/urban_areas/slug:" + scored_city_formatted + "/scores/"
+                    scored_city_formatted_url = "https://api.teleport.org/api/urban_areas/slug:" + \
+                        scored_city_formatted + "/scores/"
                     teleport_api_res = requests.get(scored_city_formatted_url)
                     request.session['city_score_info_name'] = scored_city.title()
-                    request.session['city_score_info_score'] = int(teleport_api_res.json()['teleport_city_score'])
-                    request.session['city_score_info_summary'] = teleport_api_res.json()['summary']
+                    request.session['city_score_info_score'] = int(
+                        teleport_api_res.json()['teleport_city_score'])
+                    request.session['city_score_info_summary'] = teleport_api_res.json()[
+                        'summary']
                     request.session['data_for_viz_radar'] = ""
-                    city_score_categories = teleport_api_res.json()['categories']
-                    scores_for_cities_arr = [0,0,0,0,0,0,0,0]
+                    city_score_categories = teleport_api_res.json()[
+                        'categories']
+                    scores_for_cities_arr = [0, 0, 0, 0, 0, 0, 0, 0]
                     for i in city_score_categories:
                         if i['name'] == 'Housing':
-                            scores_for_cities_arr[0] = round(i['score_out_of_10'],2)
+                            scores_for_cities_arr[0] = round(
+                                i['score_out_of_10'], 2)
                         elif i['name'] == 'Cost of Living':
-                            scores_for_cities_arr[1] = round(i['score_out_of_10'],2)
+                            scores_for_cities_arr[1] = round(
+                                i['score_out_of_10'], 2)
                         elif i['name'] == 'Healthcare':
-                            scores_for_cities_arr[2] = round(i['score_out_of_10'],2)
+                            scores_for_cities_arr[2] = round(
+                                i['score_out_of_10'], 2)
                         elif i['name'] == 'Education':
-                            scores_for_cities_arr[3] = round(i['score_out_of_10'],2)
+                            scores_for_cities_arr[3] = round(
+                                i['score_out_of_10'], 2)
                         elif i['name'] == 'Environmental Quality':
-                            scores_for_cities_arr[4] = round(i['score_out_of_10'],2)
+                            scores_for_cities_arr[4] = round(
+                                i['score_out_of_10'], 2)
                         elif i['name'] == 'Economy':
-                            scores_for_cities_arr[5] = round(i['score_out_of_10'],2)
+                            scores_for_cities_arr[5] = round(
+                                i['score_out_of_10'], 2)
                         elif i['name'] == 'Outdoors':
-                            scores_for_cities_arr[6] = round(i['score_out_of_10'],2)
+                            scores_for_cities_arr[6] = round(
+                                i['score_out_of_10'], 2)
                         elif i['name'] == 'Commute':
-                            scores_for_cities_arr[7] = round(i['score_out_of_10'],2)
+                            scores_for_cities_arr[7] = round(
+                                i['score_out_of_10'], 2)
                     for x in scores_for_cities_arr:
                         request.session['data_for_viz_radar'] += (str(x) + ",")
                     request.session['data_for_viz_radar'] = request.session['data_for_viz_radar'][:-1]
@@ -351,7 +366,8 @@ def voice(request):
                     request.session['command_for_city_scores_compare'] = "Quality of Life scores for " + scored_city
                     talkToMe("Quality of Life scores for " + scored_city)
                 except:
-                    talkToMe("Either " + scored_city + " is not a city, or it has not been evaluated")
+                    talkToMe("Either " + scored_city +
+                             " is not a city, or it has not been evaluated")
 
         # test: "cat pictures"
         if PIC_REGEX_COMMAND.search(command.lower()):
