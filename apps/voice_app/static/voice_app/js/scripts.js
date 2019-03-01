@@ -10,7 +10,7 @@ $(document).ready(function (e) {
 });
 
 $(document).ready(function () {
-    
+    $("#about_wrapper").css("display", "none");
     
     $("#micbtn").click(function () {
         $("#loading-wrapper").css("display", "block");
@@ -25,7 +25,20 @@ $(document).ready(function () {
             $("#commands_wrapper").css("display" , "inline");
         else
             $("#commands_wrapper").css("display" , "none");
+    });
 
+    $(".close").click(function()
+    {   $("#about_wrapper").removeClass("fadeIn");
+        $("#about_wrapper").addClass("fadeOut");
+        $("#blur").css("filter", "blur(0px)");
+    });
+
+    $(".about").click(function()
+    {
+        
+        $("#about_wrapper").css("display", "block");
+        $("#about_wrapper").css("z-index", "20");
+        $("#blur").css("filter", "blur(8px)");
     });
 
 });
