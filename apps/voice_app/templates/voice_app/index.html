@@ -32,6 +32,15 @@
         <div class="animated infinite pulse" id="loading-text">LISTENING</div>
         <div id="loading-content"></div>
     </div>
+    <div class ="animated" id="about_wrapper" style="display: none;">
+        <center>
+        <h2>Creators</h2> <a class = "close">x</a>
+        <p>Sam Guerreo | <a href = "https://github.com/samkguerrero"><i class="fa fa-github"></i></a> | samkguerreo@gmail.com</p>
+        <p>Vlad Dziun | <a href = "https://github.com/mrwader"><i class="fa fa-github"></i></a> | v.dziun@gmail.com</p>
+        <p>Haytham Odeh | <a href = "https://github.com/haythamodeh"><i class="fa fa-github"></i></a> | hodelion@gmail.com</p>
+    </center>
+   
+    </div>
     <div id="blur">
         <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
         <div id='stars'></div>
@@ -60,7 +69,7 @@
                 </form>
             </div>
             <div id = "commands_wrapper" class = "animated bounceInRight">
-                    <h3>Sample skills:</h3>
+                    <h3>Sample Commands:</h3>
                     <div class = "commandLog">
                         <p>&nbsp; weather</p>
                         <p>&nbsp; plot</p>
@@ -73,8 +82,8 @@
                     <p class="animated slideInDown" style="font-size: 40px;">{{last_phrase.content.upper}}</p>
                     <hr style="border-color: rgba(255, 255, 255, 0.39);">
 
-                    <iframe class="animated slideInDown" style ="{{request.session.style}}" width="760"
-                    height="515" src="{{request.session.url}}" frameborder="0"
+                    <iframe class="animated slideInDown" style ="{{request.session.style}}" width="650"
+                    height="450" src="{{request.session.url}}" frameborder="0"
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
                 </iframe>
 
@@ -255,7 +264,7 @@
                 </div>
                 <div class="footer">
                         <center>
-                                <span class ="skills">skills</span> <span class="about"> | about</span>
+                                <span class ="skills">Commands</span> <span class="about"> | About</span>
                         </center>
                     </div>
             </div>
@@ -341,7 +350,7 @@
                 "mode": "bubble"
             },
             "onclick": {
-                "enable": true,
+                "enable": false,
                 "mode": "repulse"
             },
             "resize": true

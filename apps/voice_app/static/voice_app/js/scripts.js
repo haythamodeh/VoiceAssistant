@@ -28,14 +28,20 @@ $(document).ready(function () {
     });
 
     $(".close").click(function()
-    {   $("#about_wrapper").removeClass("fadeIn");
+    {   
+        if ( $("#about_wrapper").hasClass("fadeIn") ){
+            $("#about_wrapper").removeClass("fadeIn");
+        }
         $("#about_wrapper").addClass("fadeOut");
         $("#blur").css("filter", "blur(0px)");
     });
 
     $(".about").click(function()
     {
-        
+        if ( $("#about_wrapper").hasClass("fadeOut") ){
+            $("#about_wrapper").removeClass("fadeOut");
+        }
+        $("#about_wrapper").addClass("fadeIn");
         $("#about_wrapper").css("display", "block");
         $("#about_wrapper").css("z-index", "20");
         $("#blur").css("filter", "blur(8px)");
