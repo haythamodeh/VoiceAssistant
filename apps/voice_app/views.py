@@ -32,7 +32,7 @@ owm = OWM(API_key)
 def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
     tts.save("audio.mp3")
-    os.system("audio.mp3")
+    os.system("audio.mp3") #for mac add mpg123 os.system("mpg123 audio.mp3"), for windows remove it
     Phrase.objects.create(content=phrase)
 
 
