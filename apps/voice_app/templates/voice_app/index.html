@@ -32,7 +32,7 @@
         <div class="animated infinite pulse" id="loading-text">LISTENING</div>
         <div id="loading-content"></div>
     </div>
-    <div class ="animated fadeIn" id="about_wrapper" style="display: inline-block;">
+    <div class ="animated fadeIn" id="about_wrapper" style="display: none;">
         <center>
         <h2>Creators</h2> <a class = "close">x</a>
         <p>Sam Guerreo | <a href = "https://github.com/samkguerrero">GitHub</a> | samkguerreo@gmail.com</p>
@@ -85,8 +85,8 @@
                     <p class="animated slideInDown" style="font-size: 40px;">{{last_phrase.content.upper}}</p>
                     <hr style="border-color: rgba(255, 255, 255, 0.39);">
 
-                    <iframe class="animated slideInDown" style ="{{request.session.style}}" width="760"
-                    height="515" src="{{request.session.url}}" frameborder="0"
+                    <iframe class="animated slideInDown" style ="{{request.session.style}}" width="650"
+                    height="450" src="{{request.session.url}}" frameborder="0"
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
                 </iframe>
 

@@ -32,7 +32,7 @@ owm = OWM(API_key)
 def talkToMe(phrase):
     tts = gTTS(text=phrase, lang="en")
     tts.save("audio.mp3")
-    os.system("mpg123 audio.mp3")
+    os.system("audio.mp3")
     Phrase.objects.create(content=phrase)
 
 
@@ -172,8 +172,12 @@ def voice(request):
         print(joke.text)
         talkToMe(joke.text)
 
-    elif "hello" in command:
+    elif "hey" in command:
         talkToMe("hey")
+
+    
+    elif "hello" in command:
+        talkToMe("Hello! I am your Voice Assistant. Command me!")
 
     elif "I love you" in command:
         talkToMe("I love you too")
@@ -184,11 +188,20 @@ def voice(request):
     elif "how are you" in command:
         talkToMe("i'm doing fine, thanks for asking")
 
+    elif 'goodbye' in command:
+        talkToMe('Thanks for listening!')
+        url = "https://youtu.be/G1IbRujko-A"
+        video = pafy.new(url)
+        best = video.getbest()
+        playurl = best.url
+        request.session['url'] = playurl
+        request.session['style'] = "display:inline;"
+
     elif 'email' in command:
         talkToMe('Who is the recipient?')
         recipient = myCommand(request)
 
-        if 'Sam' in recipient:
+        if 'Navya' in recipient or 'Navia' in recipient:
             talkToMe('What should I say?')
             content = myCommand(request)
 
@@ -205,7 +218,7 @@ def voice(request):
             mail.login('pyroblastgames@gmail.com', 'Assistant123')
 
             # send message
-            mail.sendmail('Vlad Dziun', 'v.dziun@gmail.com', content)
+            mail.sendmail('Navya Prakash', 'nprakash@codingdojo.com', content)
 
             # end mail connection
             mail.close()

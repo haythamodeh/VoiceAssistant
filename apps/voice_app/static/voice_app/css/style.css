@@ -141,8 +141,8 @@
     margin-top: 5%;
     text-align: center;
     /* border: 2px solid #000; */
-    /* width: 925px; */
-    max-width: 840px;
+    width: 650px;
+    /* max-width: 900px; */
     /* background-color: rgba(255, 255, 255, 0.08); */
     max-height: 70vh;
     border-radius: 30px;
@@ -237,17 +237,16 @@ body {
 
 #loading-text {
     display: block;
-    position: relative;
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     color: #fff;
     width: 100px;
     height: 30px;
-    /* margin: 50px 50px 0 0; */
+    margin: 50px 0 0 -35px;
     text-align: center;
     font-family: 'PT Sans Narrow', sans-serif;
-    font-size: 48px;
+    font-size: 45px;
 }
 
 #loading-content {
@@ -378,6 +377,10 @@ hr {
     margin-top:80vh;
     position: sticky;
     bottom: 0;
+    font-size: 20px;
+}
+.footer .skills, .footer .about{
+    cursor: pointer;
 }
 #commands_wrapper{
     float:right;
@@ -411,3 +414,4 @@ font-size: 20px;
 #about_wrapper h2{
     display:inline-block;
     }
+
