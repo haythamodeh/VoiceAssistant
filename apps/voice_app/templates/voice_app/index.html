@@ -32,15 +32,6 @@
         <div class="animated infinite pulse" id="loading-text">LISTENING</div>
         <div id="loading-content"></div>
     </div>
-    <div class ="animated fadeIn" id="about_wrapper" style="display: inline-block;">
-        <center>
-        <h2>Creators</h2> <a class = "close">x</a>
-        <p>Sam Guerreo | <a href = "https://github.com/samkguerrero">GitHub</a> | samkguerreo@gmail.com</p>
-        <p>Vlad Dziun | <a href = "https://github.com/mrwader">GitHub</a> | v.dziun@gmail.com</p>
-        <p>Haytham Odeh | <a href = "https://github.com/haythamodeh">GitHub</a> | hodelion@gmail.com</p>
-    </center>
-   
-    </div>
     <div id="blur">
         <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
         <div id='stars'></div>
@@ -69,14 +60,11 @@
                 </form>
             </div>
             <div id = "commands_wrapper" class = "animated bounceInRight">
-                    <h3>Say:</h3>
+                    <h3>Sample skills:</h3>
                     <div class = "commandLog">
-                        <p>&nbsp; "music"</p>
-                        <p>&nbsp; "open website"</p>
-                        <p>&nbsp; "hey"</p>
-                        <p>&nbsp; "top news"</p>
-                        <p>&nbsp; "I love you"</p>
-                        <p>&nbsp; "top news"</p>
+                        <p>&nbsp; weather</p>
+                        <p>&nbsp; plot</p>
+                        <p>&nbsp; music</p>
                     </div>
                 </div>
                 
@@ -265,13 +253,13 @@
                                 class="fa fa-microphone animated infinite pulse slow"></i></button>
                     </form>
                 </div>
- 
+                <div class="footer">
+                        <center>
+                                <span class ="skills">skills</span> <span class="about"> | about</span>
+                        </center>
+                    </div>
             </div>
-            <div class="footer">
-                    <center>
-                            <span class ="skills">skills</span> <span class ="about"> | about</span>
-                    </center>
-                </div>
+
         </div>
     </div>
     <script type="text/javascript">
@@ -279,17 +267,17 @@
         {
         "particles": {
             "number": {
-            "value": 80,
+            "value": 160,
             "density": {
                 "enable": true,
                 "value_area": 800
             }
             },
             "color": {
-            "value": "#ff7676"
+            "value": "#ffffff"
             },
             "shape": {
-            "type": "image",
+            "type": "circle",
             "stroke": {
                 "width": 0,
                 "color": "#000000"
@@ -298,28 +286,28 @@
                 "nb_sides": 5
             },
             "image": {
-                "src": "{% static 'heartIcon.png' %}",
+                "src": "img/github.svg",
                 "width": 100,
                 "height": 100
             }
             },
             "opacity": {
-            "value": 0.5,
-            "random": false,
+            "value": 1,
+            "random": true,
             "anim": {
-                "enable": false,
+                "enable": true,
                 "speed": 1,
-                "opacity_min": 0.1,
+                "opacity_min": 0,
                 "sync": false
             }
             },
             "size": {
-            "value": 7,
+            "value": 3,
             "random": true,
             "anim": {
                 "enable": false,
-                "speed": 40,
-                "size_min": 0.1,
+                "speed": 4,
+                "size_min": 0.3,
                 "sync": false
             }
             },
@@ -332,28 +320,29 @@
             },
             "move": {
             "enable": true,
-            "speed": 6,
+            "speed": 1,
             "direction": "none",
-            "random": false,
+            "random": true,
             "straight": false,
             "out_mode": "out",
+            "bounce": false,
             "attract": {
                 "enable": false,
                 "rotateX": 600,
-                "rotateY": 1200
+                "rotateY": 600
             }
             }
         },
         "interactivity": {
-            "detect_on": "canvas",
+            "detect_on": "window",
             "events": {
             "onhover": {
                 "enable": true,
-                "mode": "repulse"
+                "mode": "bubble"
             },
             "onclick": {
                 "enable": true,
-                "mode": "push"
+                "mode": "repulse"
             },
             "resize": true
             },
@@ -365,14 +354,15 @@
                 }
             },
             "bubble": {
-                "distance": 400,
-                "size": 40,
+                "distance": 250,
+                "size": 0,
                 "duration": 2,
-                "opacity": 8,
+                "opacity": 0,
                 "speed": 3
             },
             "repulse": {
-                "distance": 200
+                "distance": 400,
+                "duration": 0.4
             },
             "push": {
                 "particles_nb": 4
@@ -382,16 +372,8 @@
             }
             }
         },
-        "retina_detect": true,
-        "config_demo": {
-            "hide_card": false,
-            "background_color": "#b61924",
-            "background_image": "",
-            "background_position": "50% 50%",
-            "background_repeat": "no-repeat",
-            "background_size": "cover"
-        }
-        });
+        "retina_detect": true
+        })
     </script>
 
 </body>
