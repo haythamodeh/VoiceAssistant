@@ -3,9 +3,8 @@ from.import views
 
 urlpatterns = [
     url(r'^$', views.index),
-    url(r"^myCommand$", views.myCommand),
+    # url(r"^myCommand$", views.myCommand),
     url(r"^voice$", views.voice),
+    # url(r"^catchWebVoice$", views.catchWebVoice),
     url(r"^clearActivityLog$", views.clearActivityLog),
-
-    
 ]

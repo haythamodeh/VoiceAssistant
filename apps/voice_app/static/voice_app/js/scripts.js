@@ -1,5 +1,87 @@
+$(document).ready(function() {
+    var playback = document.getElementById("playback");
+    // var last_thing_said = document.getElementById("last_thing_said")
+    // console.log("sam this was the last thing said")
+    // console.log(last_thing_said.innerHTML)
+    playback.play()
+})
+
+$(document).ready(function () {
+    $('#micbtn_web').click(function(){
+        console.log('web mic on')
+        window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+        let finalTranscript = '';
+        let recognition = new window.SpeechRecognition();
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 10;
+        recognition.continuous = true;
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex, len = event.results.length; i < len; i++) {
+            let transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript;
+            } else {
+                interimTranscript += transcript;
+            }
+            }
+            console.log(finalTranscript)
+            // document.querySelector('#phrase').innerHTML = finalTranscript + interimTranscript;
+
+            const url = '/voice' 
+            const web_voice_data = {
+                web_voice_phrase: finalTranscript,
+            }
+
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var csrftoken = getCookie('csrftoken');
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            $.post(url,web_voice_data,function(data, status){
+                console.log(`${status}`)
+                console.log("final trasn text")
+                console.log(finalTranscript)
+                console.log("final trans leng")
+                console.log(finalTranscript.length)        
+                $("#loading-wrapper").css("display", "block");
+                $("#blur").css("filter", "blur(8px)");
+                $("#loading-wrapper").css("z-index", "10");
+                if (finalTranscript.length > 0){
+                    location.reload()
+                }
+            })
+
+        }
+        recognition.start();
+    });
+});
+
 $(document).ready(function (e) {
-    console.log("hello");
 
     $('body').keyup(function (e) {
         if (e.keyCode == 32) {
@@ -16,7 +98,7 @@ $(document).ready(function () {
         $("#loading-wrapper").css("display", "block");
         $("#blur").css("filter", "blur(8px)");
         $("#loading-wrapper").css("z-index", "10");
-        
+
     });
     var display = false;
     $(".skills").click(function(){

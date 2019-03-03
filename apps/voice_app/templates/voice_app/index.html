@@ -18,11 +18,7 @@
     <link rel="stylesheet" href="{% static 'voice_app/css/style.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
     <script src="{% static 'voice_app/js/scripts.js' %}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
-
-    
-
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>    
     <title>Voice App</title>
 </head>
 
@@ -34,12 +30,12 @@
     </div>
     <div class ="animated" id="about_wrapper" style="display: none;">
         <center>
-        <h2>Creators</h2> <a class = "close">x</a>
-        <p>Sam Guerreo | <a href = "https://github.com/samkguerrero"><i class="fa fa-github"></i></a> | samkguerreo@gmail.com</p>
-        <p>Vlad Dziun | <a href = "https://github.com/mrwader"><i class="fa fa-github"></i></a> | v.dziun@gmail.com</p>
-        <p>Haytham Odeh | <a href = "https://github.com/haythamodeh"><i class="fa fa-github"></i></a> | hodelion@gmail.com</p>
-    </center>
-   
+            <h2>Creators</h2> <a class = "close">x</a>
+            <p>Sam Guerreo | <a href = "https://github.com/samkguerrero"><i class="fa fa-github"></i></a> | samkguerreo@gmail.com</p>
+            <p>Vlad Dziun | <a href = "https://github.com/mrwader"><i class="fa fa-github"></i></a> | v.dziun@gmail.com</p>
+            <p>Haytham Odeh | <a href = "https://github.com/haythamodeh"><i class="fa fa-github"></i></a> | hodelion@gmail.com</p>
+        </center>
+
     </div>
     <div id="blur">
         <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
@@ -79,13 +75,18 @@
                 
             <div class="main-content-wrapper">
                 <div class="main-content">
-                    <p class="animated slideInDown" style="font-size: 40px;">{{last_phrase.content.upper}}</p>
+                    <p id="last_thing_said" class="animated slideInDown" style="font-size: 40px;">{{last_phrase.content.upper}}</p>
                     <hr style="border-color: rgba(255, 255, 255, 0.39);">
 
                     <iframe class="animated slideInDown" style ="{{request.session.style}}" width="650"
                     height="450" src="{{request.session.url}}" frameborder="0"
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
                 </iframe>
+
+                    {% load static %}
+                    <audio style="display:none" id="playback" controls>
+                        <source src="{% static 'voice_app/audio/audio.mp3' %}" type="audio/mpeg">
+                    </audio>
 
                     {% if last_phrase.content == request.session.command_for_pics %}
                     <div class="container animated slideInDown">
@@ -248,20 +249,33 @@
                         {% endfor %}
                     {% endif %}
 
-                    {% if last_phrase.content == request.session.command %}
+                    {% if 'temperature of' in last_phrase.content %}
                         {% if "weatherimage" in request.session %}
                             <img class="weatherimage animated fadeInUp" src="{{request.session.weatherimage}}" alt="weatherimage">
                         {% endif %}
                     {% endif %}
                 </div>
 
-                <div class="button text-center">
+                <!-- <div class="button text-center">
                     <form action="/voice">
-                        <!-- <input id = "myBtn" type="submit" value="Press To Talk" class="btn btn-primary fa fa-microphone" onkeypress="submitOnEnter(this, event);" /> -->
-                        <button id="micbtn" type="submit" class="micbtn"><i
-                                class="fa fa-microphone animated infinite pulse slow"></i></button>
+                        <button id="micbtn" type="submit" class="micbtn">
+                                <i class="fa fa-microphone animated infinite pulse slow"></i>
+                        </button>
                     </form>
+                </div> -->
+
+                <div class="button text-center">
+                        {% csrf_token %}
+                        <button id="micbtn_web" class="micbtn">
+                                <i class="fa fa-microphone animated infinite pulse slow"></i>
+                        </button>
                 </div>
+
+                <!-- <div class="container">
+                    <h1>Voices</h1>
+                    <div id="phrase">LOL</div>
+                </div> -->
+
                 <div class="footer">
                         <center>
                                 <span class ="skills">Commands</span> <span class="about"> | About</span>

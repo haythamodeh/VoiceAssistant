@@ -22,30 +22,31 @@ import youtube_dl
 from googlesearch import search
 import webbrowser
 import cv2
+import datetime
 
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
 
-
 def talkToMe(phrase):
+    os.remove("./apps/voice_app/static/voice_app/audio/audio.mp3")
     tts = gTTS(text=phrase, lang="en")
-    tts.save("audio.mp3")
-    os.system("audio.mp3") #for mac add mpg123 os.system("mpg123 audio.mp3"), for windows remove it
+    tts.save("./apps/voice_app/static/voice_app/audio/audio.mp3")
+    # os.system("audio.mp3") #for mac add mpg123 os.system("mpg123 audio.mp3"), for windows remove it
     Phrase.objects.create(content=phrase)
-
+    # return redirect("/")
 
 def postImage(phrase):
     Phrase.objects.create(content=phrase)
-
 
 def index(request):
     if not "color" in request.session:
         request.session["color"] = "white"
     if 'style' not in request.session:
         request.session['style'] = "display:none;"
-
+    if not 'spoken_command' in request.session:
+        request.session['spoken_command'] = "default"
     itemlist = ItemList.objects.all().order_by("-id")
     phrases = Phrase.objects.last()
     content = {
@@ -53,7 +54,6 @@ def index(request):
         "last_phrase": phrases
     }
     return render(request, "voice_app/index.html", content)
-
 
 def clearActivityLog(request):
     if 'color' in request.session:
@@ -69,31 +69,41 @@ def clearActivityLog(request):
     talkToMe("How Can I help you?")
     return redirect("/")
 
+# def catchWebVoice(request):
+#     if request.method == "POST":
+#         print('Sam i got the voice!')
+#         print(request)
+#         print(request.POST)
+#         print(request.POST['web_voice_phrase'])
+#         return redirect("/")
 
-def myCommand(request):
-    r = sr.Recognizer()
+# def myCommand(request):
+#     r = sr.Recognizer()
 
-    with sr.Microphone() as source:
-        print("I am ready for your next command")
+#     with sr.Microphone() as source:
+#         print("I am ready for your next command")
 
-        audio = r.listen(source)
+#         audio = r.listen(source)
 
-    try:
-        command = r.recognize_google(audio)
-        print("You said: " + command)
+#     try:
+#         command = r.recognize_google(audio)
+#         print("You said: " + command)
 
-    except sr.UnknownValueError:
-        return redirect("/")
+#     except sr.UnknownValueError:
+#         return redirect("/")
 
-    phrase = r.recognize_google(audio)
-    ItemList.objects.create(item=phrase)
-    request.session["command"] = command
-    return request.session["command"]
-
+#     phrase = request.POST['web_voice_phrase']
+#     ItemList.objects.create(item=phrase)
+#     request.session["command"] = command
+#     return request.session["command"]
 
 def voice(request):
-    talkToMe("How can I help you?")
-    command = myCommand(request)
+    # talkToMe("How can I help you?")
+    # command = myCommand(request)
+    command = request.POST['web_voice_phrase']
+    if len(request.POST['web_voice_phrase']) > 0:
+        ItemList.objects.create(item=command)
+        request.session["command"] = command
     WEATHER_REGEX_COMMAND = re.compile(r'(current weather)')
     CITY_SCORE_REGEX_COMMAND = re.compile(r'(scores for)')
     DATAVIZ_REGEX_COMAND = re.compile(r'(pollution for)')
@@ -127,17 +137,19 @@ def voice(request):
                 # url = 'https://www.google.com/' + domain
                 # webbrowser.open(url)
                 print('Done!')
+                return redirect("/")
             else:
                 pass
+                return redirect("/")
 
     elif "top news" in command:
-        print("in news command")
         api.get_top_headlines(sources='bbc-news')
         request.session["bitcoin"] = api.get_everything(q='bitcoin')
         request.session["all_news"] = api.get_sources()
         request.session["last_news_command"] = "here are your top news for today"
         #  = all_news
         talkToMe("here are your top news for today")
+        return redirect("/")
 
     # elif "take a picture" in command:
     #         cam = cv2.VideoCapture(0)
@@ -171,22 +183,27 @@ def voice(request):
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
         print(joke.text)
         talkToMe(joke.text)
+        return redirect("/")
 
     elif "hey" in command:
         talkToMe("hey")
-
+        return redirect("/")
     
     elif "hello" in command:
-        talkToMe("Hello! I am your Voice Assistant. Command me!")
+        talkToMe("Hello!")
+        return redirect("/")
 
     elif "I love you" in command:
         talkToMe("I love you too")
+        return redirect("/")
 
     elif "dick pics" in command:
         talkToMe("Oh look, it is richard nixon")
+        return redirect("/")
 
     elif "how are you" in command:
         talkToMe("i'm doing fine, thanks for asking")
+        return redirect("/")
 
     elif 'goodbye' in command:
         talkToMe('Thanks for listening!')
@@ -196,39 +213,42 @@ def voice(request):
         playurl = best.url
         request.session['url'] = playurl
         request.session['style'] = "display:inline;"
+        return redirect("/")
 
-    elif 'email' in command:
-        talkToMe('Who is the recipient?')
-        recipient = myCommand(request)
+    # elif 'email' in command:
+    #     talkToMe('Who is the recipient?')
+    #     recipient = request.POST['web_voice_phrase']
 
-        if 'Navya' in recipient or 'Navia' in recipient:
-            talkToMe('What should I say?')
-            content = myCommand(request)
+    #     if 'Navya' in recipient or 'Navia' in recipient:
+    #         talkToMe('What should I say?')
+    #         content = request.POST['web_voice_phrase']
 
-            # init gmail SMTP
-            mail = smtplib.SMTP('smtp.gmail.com', 587)
+    #         # init gmail SMTP
+    #         mail = smtplib.SMTP('smtp.gmail.com', 587)
 
-            # identify to server
-            mail.ehlo()
+    #         # identify to server
+    #         mail.ehlo()
 
-            # encrypt session
-            mail.starttls()
+    #         # encrypt session
+    #         mail.starttls()
 
-            # login
-            mail.login('pyroblastgames@gmail.com', 'Assistant123')
+    #         # login
+    #         mail.login('pyroblastgames@gmail.com', 'Assistant123')
 
-            # send message
-            mail.sendmail('Navya Prakash', 'nprakash@codingdojo.com', content)
+    #         # send message
+    #         mail.sendmail('Navya Prakash', 'nprakash@codingdojo.com', content)
 
-            # end mail connection
-            mail.close()
+    #         # end mail connection
+    #         mail.close()
 
-            talkToMe('Email sent.')
+    #         talkToMe('Email sent.')
+    #         return redirect("/")
 
     elif 'stop' in command:
         request.session['style'] = "display:none;"
         if 'url' in request.session:
             del request.session['url']
+        talkToMe("stopping song")
 
     # test: "open website yahoo.com"
     elif 'open website' in command:
@@ -238,8 +258,10 @@ def voice(request):
             url = 'https://www.' + domain
             webbrowser.open(url)
             print('Done!')
+            return redirect("/")
         else:
             pass
+            return redirect("/")
 
     elif not hasattr(command, 'status_code'):
 
@@ -264,6 +286,8 @@ def voice(request):
             playurl = best.url
             request.session['url'] = playurl
             request.session['style'] = "display:inline;"
+            talkToMe("Playing clip")
+            return redirect("/")
 
         if PLAY_SONG_REGEX.search(command.lower()):
             SONG_REGEX = re.compile(r'(?<=\bsong\s)(.*)')            
@@ -286,6 +310,8 @@ def voice(request):
             playurl = best.url
             request.session['url'] = playurl
             request.session['style'] = "display:none;"
+            talkToMe("Playing song")
+            return redirect("/")
 
         # test: "current weather in los angeles"
         if WEATHER_REGEX_COMMAND.search(command.lower()):
@@ -304,13 +330,15 @@ def voice(request):
                     request.session["weatherimage"] = weatherimage
                     # print(request.session["weatherimage"])
                     Phrase.objects.create(content=weatherimage)
-                    request.session["command"] = "current weather in " + city + " is " + str(
+                    request.session["command_weather"] = "current weather in " + city + " is " + str(
                         status) + " with a temerature of " + str(temp["temp"]) + " degrees"
                     print(temp)
                     talkToMe("current weather in " + city + " is " + str(status) +
-                            " with a temerature of " + str(temp["temp"]) + " degrees")
+                            " with a temperature of " + str(temp["temp"]) + " degrees")
+                    return redirect("/")                    
                 except:
                     talkToMe("I could not find your " + city)
+                    return redirect("/")
 
         # test: "who is bob ross"
         if WHOIS_REGEX.match(command.lower()):
@@ -321,8 +349,10 @@ def voice(request):
                 name = regex_person_result.group(0)
                 try:
                     talkToMe(wikipedia.summary(name, sentences=1))
+                    return redirect("/")
                 except:
                     talkToMe("No information on " + name)
+                    return redirect("/")
 
         # test: "scores for seattle"
         if CITY_SCORE_REGEX_COMMAND.search(command.lower()):
@@ -377,9 +407,10 @@ def voice(request):
                     print(request.session['data_for_viz_radar'])
                     request.session['command_for_city_scores_compare'] = "Quality of Life scores for " + scored_city
                     talkToMe("Quality of Life scores for " + scored_city)
+                    return redirect("/")
                 except:
-                    talkToMe("Either " + scored_city +
-                             " is not a city, or it has not been evaluated")
+                    talkToMe("Either " + scored_city + " is not a city, or it has not been evaluated")
+                    return redirect("/")
 
         # test: "cat pictures"
         if PIC_REGEX_COMMAND.search(command.lower()):
@@ -413,8 +444,11 @@ def voice(request):
                                 formated_pics.append(
                                     '<img style="margin: 10px 5px 10px 2px;" src="{}" alt="things" height="200" width="200">'.format(j['source']))
                     request.session['main_content'] = formated_pics
+                    return redirect("/")
+
                 except:
                     talkToMe("No images for " + command_subject)
+                    return redirect("/")
 
         # test: "plot for italy"
         if DATAVIZ_REGEX_COMAND.search(command.lower()):
@@ -463,10 +497,10 @@ def voice(request):
                     request.session['chart_data_city_scores'] = city_scores[:-1]
                     talkToMe("plotting " + data)
                     request.session['command_for_data'] = "plotting " + data
+                    return redirect("/")
                 except:
-                    talkToMe(
-                        data + ", Either this is not a country, or there are no stations there")
-
+                    talkToMe(data + ", Either this is not a country, or there are no stations there")
+                    return redirect("/")
     else:
         talkToMe("I don't understand what you are saying")
 
