@@ -84,7 +84,7 @@
 
                     {% load static %}
                     <audio style="display:none" id="playback" controls>
-                        <source src="{% static 'voice_app/audio/audio.mp3' %}" type="audio/mpeg">
+                        <source src="{% static request.session.song_id %}" type="audio/mpeg">
                     </audio>
 
                     {% if last_phrase.content == request.session.command_for_pics %}

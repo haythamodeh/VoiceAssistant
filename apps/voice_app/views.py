@@ -23,18 +23,20 @@ from googlesearch import search
 import webbrowser
 import cv2
 import datetime
+import time
 
 api = NewsApiClient(api_key="3eb42269bdca4ea2a7943f4941bee048")
 av_api_key = ' FsmP6ydbQaqBsWwYv'
 API_key = '1b22d51d2689d3610710583b11cb5fdd'
 owm = OWM(API_key)
 
-def talkToMe(phrase):
-    os.remove("./apps/voice_app/static/voice_app/audio/audio.mp3")
+def talkToMe(phrase, request):
     tts = gTTS(text=phrase, lang="en")
-    tts.save("./apps/voice_app/static/voice_app/audio/audio.mp3")
+    audio_id = int(time.time())
+    tts.save("./apps/voice_app/static/voice_app/audio/audio" + str(audio_id) + ".mp3")
     # os.system("audio.mp3") #for mac add mpg123 os.system("mpg123 audio.mp3"), for windows remove it
     Phrase.objects.create(content=phrase)
+    request.session['song_id'] = 'voice_app/audio/audio' + str(audio_id) + '.mp3'
     # return redirect("/")
 
 def postImage(phrase):
@@ -66,7 +68,7 @@ def clearActivityLog(request):
     Phrase.objects.create(content="How can I help you?")
     all_items = ItemList.objects.all()
     all_items.delete()
-    talkToMe("How Can I help you?")
+    talkToMe("How Can I help you?", request)
     return redirect("/")
 
 # def catchWebVoice(request):
@@ -125,7 +127,7 @@ def voice(request):
                 tabUrl = "https://google.com/?#q="
                 term = domain
                 webbrowser.open(tabUrl+term, new = new, autoraise=True)
-                talkToMe("i opened your results in a new page! your welcome!")
+                talkToMe("i opened your results in a new page! your welcome!", request)
                 # for url in search(domain, stop=1):
                 #     print(url)
                 #     webbrowser.open(url)
@@ -148,7 +150,7 @@ def voice(request):
         request.session["all_news"] = api.get_sources()
         request.session["last_news_command"] = "here are your top news for today"
         #  = all_news
-        talkToMe("here are your top news for today")
+        talkToMe("here are your top news for today", request)
         return redirect("/")
 
     # elif "take a picture" in command:
@@ -182,31 +184,31 @@ def voice(request):
     elif "tell me a joke" in command:
         joke = requests.get('https://geek-jokes.sameerkumar.website/api')
         print(joke.text)
-        talkToMe(joke.text)
+        talkToMe(joke.text, request)
         return redirect("/")
 
     elif "hey" in command:
-        talkToMe("hey")
+        talkToMe("hey", request)
         return redirect("/")
     
     elif "hello" in command:
-        talkToMe("Hello!")
+        talkToMe("Hello!", request)
         return redirect("/")
 
     elif "I love you" in command:
-        talkToMe("I love you too")
+        talkToMe("I love you too", request)
         return redirect("/")
 
     elif "dick pics" in command:
-        talkToMe("Oh look, it is richard nixon")
+        talkToMe("Oh look, it is richard nixon", request)
         return redirect("/")
 
     elif "how are you" in command:
-        talkToMe("i'm doing fine, thanks for asking")
+        talkToMe("i'm doing fine, thanks for asking", request)
         return redirect("/")
 
     elif 'goodbye' in command:
-        talkToMe('Thanks for listening!')
+        talkToMe('Thanks for listening!', request)
         url = "https://youtu.be/G1IbRujko-A"
         video = pafy.new(url)
         best = video.getbest()
@@ -248,7 +250,7 @@ def voice(request):
         request.session['style'] = "display:none;"
         if 'url' in request.session:
             del request.session['url']
-        talkToMe("stopping song")
+        talkToMe("stopping song", request)
 
     # test: "open website yahoo.com"
     elif 'open website' in command:
@@ -286,7 +288,7 @@ def voice(request):
             playurl = best.url
             request.session['url'] = playurl
             request.session['style'] = "display:inline;"
-            talkToMe("Playing clip")
+            talkToMe("Playing clip", request)
             return redirect("/")
 
         if PLAY_SONG_REGEX.search(command.lower()):
@@ -310,7 +312,7 @@ def voice(request):
             playurl = best.url
             request.session['url'] = playurl
             request.session['style'] = "display:none;"
-            talkToMe("Playing song")
+            talkToMe("Playing song", request)
             return redirect("/")
 
         # test: "current weather in los angeles"
@@ -334,10 +336,10 @@ def voice(request):
                         status) + " with a temerature of " + str(temp["temp"]) + " degrees"
                     print(temp)
                     talkToMe("current weather in " + city + " is " + str(status) +
-                            " with a temperature of " + str(temp["temp"]) + " degrees")
+                            " with a temperature of " + str(temp["temp"]) + " degrees", request)
                     return redirect("/")                    
                 except:
-                    talkToMe("I could not find your " + city)
+                    talkToMe("I could not find your " + city, request)
                     return redirect("/")
 
         # test: "who is bob ross"
@@ -348,10 +350,10 @@ def voice(request):
                 regex_person_result = PERSON_REGEX.search(command.lower())
                 name = regex_person_result.group(0)
                 try:
-                    talkToMe(wikipedia.summary(name, sentences=1))
+                    talkToMe(wikipedia.summary(name, sentences=1), request)
                     return redirect("/")
                 except:
-                    talkToMe("No information on " + name)
+                    talkToMe("No information on " + name, request)
                     return redirect("/")
 
         # test: "scores for seattle"
@@ -406,10 +408,10 @@ def voice(request):
                     request.session['data_for_viz_radar'] = request.session['data_for_viz_radar'][:-1]
                     print(request.session['data_for_viz_radar'])
                     request.session['command_for_city_scores_compare'] = "Quality of Life scores for " + scored_city
-                    talkToMe("Quality of Life scores for " + scored_city)
+                    talkToMe("Quality of Life scores for " + scored_city, request)
                     return redirect("/")
                 except:
-                    talkToMe("Either " + scored_city + " is not a city, or it has not been evaluated")
+                    talkToMe("Either " + scored_city + " is not a city, or it has not been evaluated", request)
                     return redirect("/")
 
         # test: "cat pictures"
@@ -428,7 +430,7 @@ def voice(request):
                 try:
                     request.session['command_for_pics'] = "showing " + \
                         command_subject + " pictures"
-                    talkToMe("showing " + command_subject + " pictures")
+                    talkToMe("showing " + command_subject + " pictures", request)
                     flickrApiUrl = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=3fe4879a5cbb64c72bd1c73499e6c9dd&per_page=12&tags=" + \
                         command_subject + "&tag_mode=any&format=json&nojsoncallback=1"
                     flickr_res = requests.get(flickrApiUrl)
@@ -447,7 +449,7 @@ def voice(request):
                     return redirect("/")
 
                 except:
-                    talkToMe("No images for " + command_subject)
+                    talkToMe("No images for " + command_subject, request)
                     return redirect("/")
 
         # test: "plot for italy"
@@ -495,14 +497,14 @@ def voice(request):
                     # print(city_scores)
                     request.session['chart_data_city_names'] = city_names[:-1]
                     request.session['chart_data_city_scores'] = city_scores[:-1]
-                    talkToMe("plotting " + data)
+                    talkToMe("plotting " + data, request)
                     request.session['command_for_data'] = "plotting " + data
                     return redirect("/")
                 except:
-                    talkToMe(data + ", Either this is not a country, or there are no stations there")
+                    talkToMe(data + ", Either this is not a country, or there are no stations there", request)
                     return redirect("/")
     else:
-        talkToMe("I don't understand what you are saying")
+        talkToMe("I don't understand what you are saying", request)
 
     return redirect("/")
 
