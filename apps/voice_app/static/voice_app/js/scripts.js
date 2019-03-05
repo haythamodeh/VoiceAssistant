@@ -68,9 +68,7 @@ $(document).ready(function () {
                 console.log(finalTranscript)
                 console.log("final trans leng")
                 console.log(finalTranscript.length)        
-                $("#loading-wrapper").css("display", "block");
-                $("#blur").css("filter", "blur(8px)");
-                $("#loading-wrapper").css("z-index", "10");
+
                 if (finalTranscript.length > 0){
                     location.reload()
                 }
