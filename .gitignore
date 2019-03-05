@@ -2,4 +2,3 @@ __pycache__/
 .vscode/
 venv/
 db.sqlite3
-apps/static/voice_app/audio/

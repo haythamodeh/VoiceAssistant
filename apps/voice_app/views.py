@@ -33,7 +33,7 @@ owm = OWM(API_key)
 def talkToMe(phrase, request):
     tts = gTTS(text=phrase, lang="en")
     audio_id = int(time.time())
-    tts.save("./apps/voice_app/static/voice_app/audio/audio" + str(audio_id) + ".mp3")
+    tts.save("./static/voice_app/audio/audio" + str(audio_id) + ".mp3")
     # os.system("audio.mp3") #for mac add mpg123 os.system("mpg123 audio.mp3"), for windows remove it
     Phrase.objects.create(content=phrase)
     request.session['song_id'] = 'voice_app/audio/audio' + str(audio_id) + '.mp3'

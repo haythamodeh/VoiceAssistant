@@ -25,7 +25,7 @@ SECRET_KEY = '5yj+d&30_eudbo5*qjo(qinot9+$_9yadsn%stk4*t*axh!^+='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['34.210.191.142','www.voiceassistant.xyz']
 
 
 # Application definition
@@ -119,3 +119,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
