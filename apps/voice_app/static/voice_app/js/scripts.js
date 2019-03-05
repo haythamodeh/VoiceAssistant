@@ -9,6 +9,9 @@ $(document).ready(function() {
 $(document).ready(function () {
     $('#micbtn_web').click(function(){
         console.log('web mic on')
+        $("#loading-wrapper").css("display", "block");
+        $("#blur").css("filter", "blur(8px)");
+        $("#loading-wrapper").css("z-index", "10");
         window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
         let finalTranscript = '';
         let recognition = new window.SpeechRecognition();
@@ -68,7 +71,6 @@ $(document).ready(function () {
                 console.log(finalTranscript)
                 console.log("final trans leng")
                 console.log(finalTranscript.length)        
-
                 if (finalTranscript.length > 0){
                     location.reload()
                 }
