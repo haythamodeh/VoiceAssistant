@@ -49,6 +49,10 @@
                 PARALLAX PIXEL STARSvcbcbcbcbcb
             </span>
         </div> -->
+        {% load static %}
+        <audio id="mysoundclip">
+                <source src="{% static 'voice_app/js/sirisound.mp3' %}"></source>
+        </audio>
         <div class="container">
             <div class="activityLogWrapper">
                 <h3>Recent Commands:</h3>
@@ -93,7 +97,7 @@
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
                 </iframe>
 
-                    {% load static %}
+                   
                     <audio style="display:none" id="playback" controls>
                         <source src="{% static request.session.song_id %}" type="audio/mpeg">
                     </audio>
