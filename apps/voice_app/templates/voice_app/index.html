@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,6 +49,10 @@
                 PARALLAX PIXEL STARSvcbcbcbcbcb
             </span>
         </div> -->
+        {% load static %}
+        <audio id="mysoundclip">
+                <source src="{% static 'voice_app/js/sirisound.mp3' %}"></source>
+        </audio>
         <div class="container">
             <div class="activityLogWrapper">
                 <h3>Recent Commands:</h3>
@@ -64,8 +67,13 @@
                 </form>
             </div>
             <div id = "commands_wrapper" class = "animated bounceInRight">
+<<<<<<< HEAD
                     <h3>Sample Commands:</h3>
                      <div class = "commandLog">
+=======
+                    <h3>Sample Commands to ask:</h3>
+                    <div class = "commandLog">
+>>>>>>> 2f9201943b67a51daa27b0c3114c0ce432f76e7d
                         <p>&nbsp;ex: current weather in "city" (any city)</p>
                         <p>&nbsp;ex: pollution for "china" (any country)</p>
                         <p>&nbsp;ex: top news</p>
@@ -94,7 +102,7 @@
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
                 </iframe>
 
-                    {% load static %}
+                   
                     <audio style="display:none" id="playback" controls>
                         <source src="{% static request.session.song_id %}" type="audio/mpeg">
                     </audio>
