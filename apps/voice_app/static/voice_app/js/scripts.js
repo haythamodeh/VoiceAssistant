@@ -15,11 +15,8 @@ $(document).ready(function () {
     }
     $('#micbtn_web').click(function(){
         console.log('web mic on')
-<<<<<<< HEAD
-=======
         var audio = $("#mysoundclip")[0];
         audio.play();
->>>>>>> 2f9201943b67a51daa27b0c3114c0ce432f76e7d
         $("#loading-wrapper").css("display", "block");
         $("#blur").css("filter", "blur(8px)");
         $("#loading-wrapper").css("z-index", "10");

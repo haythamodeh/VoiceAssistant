@@ -257,6 +257,10 @@ body {
     transform: translate(-50%, -50%);
     width: 344px;
     height: 344px;
+<<<<<<< HEAD
+=======
+    /* margin: -85px 60px 0 0; */
+>>>>>>> 2f9201943b67a51daa27b0c3114c0ce432f76e7d
     border: 3px solid #F00;
 }
 
