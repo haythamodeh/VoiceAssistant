@@ -7,6 +7,12 @@ $(document).ready(function() {
 })
 
 $(document).ready(function () {
+    if (navigator.appVersion.indexOf("Win") !=-1){
+        $("#loading-content").css("margin", "-85px 0 0 -85px"); //for windows
+    }
+    else{
+        $("#loading-content").css("margin", "-85px 0 0 -119px"); //for mac/linux88
+    }
     $('#micbtn_web').click(function(){
         console.log('web mic on')
         $("#loading-wrapper").css("display", "block");
@@ -104,9 +110,14 @@ $(document).ready(function () {
     $(".skills").click(function(){
         display = !display
         if (display)
-            $("#commands_wrapper").css("display" , "inline");
+            if($("#commands_wrapper").hasClass("bounceOutRight")){
+                $("#commands_wrapper").removeClass("bounceOutRight");
+            }
+            else{
+                $("#commands_wrapper").css("display" , "inline");
+            }
         else
-            $("#commands_wrapper").css("display" , "none");
+            $("#commands_wrapper").addClass("bounceOutRight");
     });
 
     $(".close").click(function()
