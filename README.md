@@ -1,4 +1,4 @@
-#Summary
+Summary
 
 The idea behind this app is a virtual assistant that can respond to commands given verbally. We wanted to imiate the 
 functionality of google voice commands and Apple's Siri. We have integrated several libraries that gives our virtual 
@@ -9,7 +9,7 @@ AWS Ec2 instance of Ubuntu 16 and is run with Nginix.
 
 See the live demo at: https://www.voiceassistant.xyz/
 
-#Initial Project Proposal
+Initial Project Proposal
 
 Overview
 
