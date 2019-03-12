@@ -1,4 +1,4 @@
-Summary
+**Project Summary:**
 
 The idea behind this app is a virtual assistant that can respond to commands given verbally. We wanted to imiate the 
 functionality of google voice commands and Apple's Siri. We have integrated several libraries that gives our virtual 
@@ -9,7 +9,7 @@ AWS Ec2 instance of Ubuntu 16 and is run with Nginix.
 
 See the live demo at: https://www.voiceassistant.xyz/
 
-Initial Project Proposal
+**Initial Project Proposal:**
 
 Overview
 
@@ -28,6 +28,7 @@ end with python library SpeechRecognition 3.8.1. We will process this informatio
 with AJAX and send post request to the Flickr api to get images to display on our website. We will also be using the 
 PyOWM python library to get the weather to display on the website.
 
+**Sample images**
 
 ![alt text](https://github.com/haythamodeh/VoiceAssistant/blob/master/static/voice_app/css/voiceassistant1.png)
 ![alt text](https://github.com/haythamodeh/VoiceAssistant/blob/master/static/voice_app/css/voiceassistant2.png)
