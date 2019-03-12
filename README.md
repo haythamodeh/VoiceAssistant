@@ -1,6 +1,6 @@
 **Project Summary:**
 
-The idea behind this app is a virtual assistant that can respond to commands given verbally. We wanted to imiate the 
+The idea behind this app is a virtual assistant that can respond to commands given verbally. We wanted to imitate the 
 functionality of google voice commands and Apple's Siri. We have integrated several libraries that gives our virtual 
 assistant the power to server dyanmic content. 
 
