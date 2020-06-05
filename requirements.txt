@@ -12,7 +12,7 @@ colorize==1.0.4
 cycler==0.10.0
 decorator==4.3.2
 detect==2018.11.19
-Django==2.1.7
+Django==2.2.13
 django-contrib-comments==1.9.1
 django-extensions==2.1.6
 Flask==1.0.2
