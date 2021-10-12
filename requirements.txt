@@ -34,7 +34,7 @@ newsapi-python==0.2.3
 numpy==1.16.1
 only==2018.11.20
 opencv-contrib-python==4.0.0.21
-opencv-python==4.0.0.21
+opencv-python==4.2.0.32
 pafy==0.5.4
 pandas==0.24.1
 psutil==5.5.1
